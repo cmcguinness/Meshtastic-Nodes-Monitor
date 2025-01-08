@@ -56,6 +56,21 @@ There are default connections in mesh.py if you don't provide an ip-address or s
 
 It will open a browser window to the app on its own.
 
+There's a shell script, start.sh, that activates the virtual environment and runs the app.
 
 
-There's a shell script, start..sh, that activates the virtual environment and runs the app.
+
+## Notes of Interest
+
+
+
+1. The program creates a file packetlog.txt with all the packets it receives during the run.  It's useful for debugging.  Unlike the display, which is limited to a maximum number of records, the file grows endlessly as the program is run.  However, it is truncated when the program starts.  You can change the line `with open('packetlog.txt', 'w') as f:` in listener.py from `'w'` to `'a'` if you don't want to reset the log after every run.
+2. When the computer sleeps, the program gets lost.  Just restart it.
+3. There are times when Chrome says "Aw Snap!".  Not sure why, but just refresh the page and nothing is lost.
+
+
+
+**Final Node:**
+
+I wrote this program so I could understand what the nodes were doing.  I started from knowing nothing, and there may well be some ignorance that persists in the program. Probably a lot.  Feel free to fix anything you don't like :-).
+
