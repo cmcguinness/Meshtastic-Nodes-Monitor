@@ -1,0 +1,47 @@
+<h3>{{ data['user.longName'] }} [{{ data['user.shortName'] }}]</h3>
+<table class="table">
+    <tr>
+        <td>Hardware</td>
+        <td>{{ data['user.hwModel'] }}</td>
+    </tr>
+    <tr>
+        <td>RSSI</td>
+        <td>{{ data['lastReceived.rxRssi'] }}</td>
+    </tr>
+    <tr>
+        <td>SNR</td>
+        <td>{{ data['lastReceived.rxSnr'] }}</td>
+    </tr>
+    <tr>
+        <td>Node Role</td>
+        <td>{{ data['user.role'] }}</td>
+    </tr>
+    <tr>
+        <td>
+            Latitude
+        </td>
+        <td>{{ data['position.latitude'] }}</td>
+    </tr>
+    <tr>
+        <td>
+            Longitude
+        </td>
+        <td>{{ data['position.longitude'] }}</td>
+    </tr>
+    <tr>
+        <td>Altitude</td>
+        <td>{{ data['position.altitude'] }} meters</td>
+    </tr>
+    <tr>
+        <td>Distance</td>
+        <td>{{data['distance']}} km</td>
+    </tr>
+    <tr>
+        <td>Uptime</td>
+        <td>{{ data['formatted_uptime'] }}</td>
+    </tr>
+    <tr>
+        <td>Hops Away</td>
+        <td>{{ data['hopsAway'] }}</td>
+    </tr>
+</table>
