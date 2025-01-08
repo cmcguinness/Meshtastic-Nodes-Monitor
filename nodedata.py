@@ -34,7 +34,10 @@ class NodeData:
                         keys.append(key)
 
         self.data = []
-        for node_id, node in self.raw_data.items():
+        # This is because another thread could come along and add items and
+        # cause us to error out
+        rd = self.raw_data.copy()
+        for node_id, node in rd.items():
             node_data = {'id': node_id}
             for key in keys:
                 if '.' in key:
