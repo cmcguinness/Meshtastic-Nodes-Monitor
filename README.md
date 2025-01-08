@@ -28,7 +28,26 @@ View Details opens a pop-up:
 
 ## Running
 
-You'll need to install the requirements via `pip install -r requirements.txt`.  It would probably be a good idea to creatre a virtual environment for it first.  Then just run:
+Create a virtual environment for the project:
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+```
+
+(On Windows, something like that, I presume)
+
+
+
+Install the required packages:
+
+```sh
+pip install -r requirements.txt
+```
+
+
+
+To run the app:
 
 * For connection over WiFi: `python app.py ip-address-of-node`
 * For connection over Serial: `python app.py /dev/...`
@@ -37,3 +56,6 @@ There are default connections in mesh.py if you don't provide an ip-address or s
 
 It will open a browser window to the app on its own.
 
+
+
+There's a shell script, start..sh, that activates the virtual environment and runs the app.
