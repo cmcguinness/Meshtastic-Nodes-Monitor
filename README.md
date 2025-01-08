@@ -26,7 +26,7 @@ View Details opens a pop-up:
 
 
 
-## Running
+## Setting Up
 
 Create a virtual environment for the project:
 
@@ -44,6 +44,21 @@ Install the required packages:
 ```sh
 pip install -r requirements.txt
 ```
+
+
+
+You need to have two environment variables set to indicate your location (for distance calculations):
+
+```sh
+export my_latitude=32.12345
+export my_longitude=-118.12345
+```
+
+With your lat/long, of course.
+
+
+
+## Running
 
 
 
