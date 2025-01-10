@@ -9,7 +9,7 @@ import logging
 import threading
 
 log = logging.getLogger('werkzeug')
-# log.setLevel(logging.ERROR)
+log.setLevel(logging.ERROR)
 
 logger = logging.getLogger(__name__)
 
@@ -51,14 +51,14 @@ def get_updates():
 def send_trace_route_in_thread(dest, hopLimit, channelIndex):
     global flash_message
     try:
-        print('Sending traceroute...', flush=True)
+        # print('Sending traceroute...', flush=True)
         Mesh().node.sendTraceRoute(dest, hopLimit, channelIndex=channelIndex)
     except Exception as e:
-        print('EXCEPTION:')
+        print('TraceRoute EXCEPTION:')
         print(e)
-        flash_message = 'Trace Route Failed'
+        # flash_message = 'Trace Route Failed'
 
-    print('Traceroute finished', flush=True)
+    # print('Traceroute finished', flush=True)
 
 
 @app.route('/api/traceroute')
@@ -68,8 +68,16 @@ def do_traceroute():
     if not item_id:
         abort(400, description="Missing required 'id' parameter")
 
-    dest = int(item_id, 16)
+    node = NodeData().lookup_by_id('!' + item_id)
+
+    if node is None:
+        node = {}
+
     hopLimit = 3
+    dest = int(item_id, 16)
+    if 'hopsAway' in node and node['hopsAway']:
+        hopLimit = max(node['hopsAway'], hopLimit)
+    print(f'Trace Route to {item_id} with {hopLimit} hops')
     channelIndex = 0
 
     thread = threading.Thread(target=send_trace_route_in_thread, args=(dest, hopLimit, channelIndex))

@@ -1,4 +1,3 @@
-{# templates/index.html #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +15,6 @@
             margin: 20px;
             padding: 0;
         }
-
 
         .split-container {
             display: flex;
@@ -37,9 +35,19 @@
             font-size: 16px;
             cursor: pointer;
         }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
     </style>
 </head>
 <body>
+<!-- Toast container -->
+<div class="toast-container"></div>
+
 <nav class="navbar bg-primary" data-bs-theme="dark">
     <div class="container-fluid justify-content-start">
         <a class="navbar-brand" href="#">Mestastic Node Monitor [{{ name }}]</a>
@@ -115,6 +123,38 @@
 <script>
 
     let pause_update = false;
+
+    function showToast(message) {
+        const toastContainer = document.querySelector('.toast-container');
+
+        const toastHTML = `
+            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Notification</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+        const toastElement = toastContainer.lastElementChild;
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 3000
+        });
+
+        toast.show();
+
+        // Remove the toast element after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
+    }
+
 
     function updateTables() {
         if (pause_update) {
@@ -252,13 +292,13 @@
             }
             return response.text();
         }).then(msg => {
-            window.alert(msg);
+            showToast(msg);  // Replace window.alert with showToast
         })
         .catch(error => {
-            window.alert(`Error loading content: ${error.message}`);
+            showToast(`Error: ${error.message}`);  // Handle errors with toast too
         });
-
     }
+
 
     function openMap(rowData) {
         const nodeNum = parseInt(rowData, 16)

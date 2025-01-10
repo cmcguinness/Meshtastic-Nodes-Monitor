@@ -64,7 +64,7 @@ class Message:
             f.write(self.formatted_date + ':' + str(self.packet).replace('\n', '\\n') + '\n')
 
     def handle_packet(self):
-        print(f'{self.application}: {self.fromId} → {self.toId}', flush=True)
+        # print(f'{self.application}: {self.fromId} → {self.toId}', flush=True)
         if self.fromId is not None:
             self.fromName = self.fromId
             node = NodeData().lookup_by_id(self.fromId)
