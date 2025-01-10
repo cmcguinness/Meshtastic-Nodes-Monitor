@@ -113,12 +113,22 @@
 </div>
 
 <script>
+
+    let pause_update = false;
+
     function updateTables() {
+        if (pause_update) {
+            return;
+        }
+
         console.log('updateTables()...');
         fetch('/api/updates')
             .then(response => response.json())
             .then(data => {
                 console.log('Data: ', data);
+                if (data.hasOwnProperty('flash') && data['flash'] !== null) {
+                    window.alert(data.flash)
+                }
                 // Update summary table
                 const summaryHeaders = document.getElementById('summary-headers');
                 const summaryValues = document.getElementById('summary-values');
@@ -174,9 +184,7 @@
 
     // Set up polling every 5 seconds
     setInterval(updateTables, 5000);
-</script>
 
-<script>
     function initializeTableActions(tableId) {
         document.getElementById(tableId).addEventListener('click', function (event) {
             const dropdownItem = event.target.closest('.dropdown-item');
@@ -216,12 +224,14 @@
         if (matches) {
             node_id = matches[1];
         }
+        console.log(`Captured ${rowData.action}`);
+
         switch (rowData.action) {
             case 'View Details':
                 showDetailsModal(node_id);
                 break;
-            case 'Download':
-                downloadItem(node_id);
+            case 'Trace Route':
+                traceRoute(node_id);
                 break;
             case 'Open in Map':
                 openMap(node_id);
@@ -232,8 +242,22 @@
     }
 
 
-    function downloadItem(rowData) {
-        console.log('Downloading packet:', rowData);
+    function traceRoute(rowData) {
+        console.log(`Trace Route ${rowData}`);
+
+        fetch(`/api/traceroute?id=${encodeURIComponent(rowData)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        }).then(msg => {
+            window.alert(msg);
+        })
+        .catch(error => {
+            window.alert(`Error loading content: ${error.message}`);
+        });
+
     }
 
     function openMap(rowData) {

@@ -6,8 +6,10 @@ from listener import Listener
 from mesh import Mesh
 from nodedata import NodeData
 import logging
+import threading
+
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+# log.setLevel(logging.ERROR)
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +17,8 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 status = Status()
+
+flash_message = None
 
 @app.route('/')
 def index():
@@ -31,12 +35,46 @@ def get_updates():
 
     packets_data = status.get_packets()
 
+    global flash_message
+    f = flash_message
+    flash_message = None
     return jsonify({
         "summary": summary_data,
         "messages": messages_data,
-        "packets": packets_data
+        "packets": packets_data,
+        "flash": f
     })
 
+# sendTraceRoute waits for a response.  We don't care, we'll see the packet
+# coming back.  So we'll stick this in a thread so the rest of the app can
+# get on with things..
+def send_trace_route_in_thread(dest, hopLimit, channelIndex):
+    global flash_message
+    try:
+        print('Sending traceroute...', flush=True)
+        Mesh().node.sendTraceRoute(dest, hopLimit, channelIndex=channelIndex)
+    except Exception as e:
+        print('EXCEPTION:')
+        print(e)
+        flash_message = 'Trace Route Failed'
+
+    print('Traceroute finished', flush=True)
+
+
+@app.route('/api/traceroute')
+def do_traceroute():
+    # Get the ID from the request arguments
+    item_id = request.args.get('id')
+    if not item_id:
+        abort(400, description="Missing required 'id' parameter")
+
+    dest = int(item_id, 16)
+    hopLimit = 3
+    channelIndex = 0
+
+    thread = threading.Thread(target=send_trace_route_in_thread, args=(dest, hopLimit, channelIndex))
+    thread.start()
+    return 'Trace Route sent.'
 
 @app.route('/api/details')
 def get_details():

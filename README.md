@@ -79,7 +79,7 @@ There's a shell script, start.sh, that activates the virtual environment and run
 
 
 
-1. The program creates a file packetlog.txt with all the packets it receives during the run.  It's useful for debugging.  Unlike the display, which is limited to a maximum number of records, the file grows endlessly as the program is run.  However, it is truncated when the program starts.  You can change the line `with open('packetlog.txt', 'w') as f:` in listener.py from `'w'` to `'a'` if you don't want to reset the log after every run.
+1. The program creates a file packetlog.txt with all the packets it receives during the run.  It's useful for debugging.  Unlike the display, which is limited to a maximum number of records, the file grows endlessly as the program is run.  It will be zeroed out when you restart the program, unless you set the environment variable `MM_APPEND_LOG` to something true-ish (like `1`)
 2. When the computer sleeps, the program gets lost.  Just restart it.
 3. There are times when Chrome says "Aw Snap!".  Not sure why, but just refresh the page and nothing is lost.
 

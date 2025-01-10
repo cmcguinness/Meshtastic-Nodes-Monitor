@@ -4,6 +4,7 @@ from utilities import *
 from pubsub import pub
 from message import Message
 import time
+import os
 
 
 class Listener():
@@ -21,8 +22,12 @@ class Listener():
                     print('Connection error, retrying in 5')
                     time.sleep(5)
 
-        with open('packetlog.txt', 'w') as f:
-            f.write(get_datestamp() + ': Initialized\n')
+        if not os.getenv('MM_APPEND_LOG'):
+            with open('packetlog.txt', 'w') as f:
+                f.write(get_datestamp() + ': Initialized\n')
+        else:
+            with open('packetlog.txt', 'a') as f:
+                f.write(get_datestamp() + ': Restarted\n')
 
         pub.subscribe(self.on_receive, "meshtastic.receive")
         pub.subscribe(self.on_disconnect, "meshtastic.connection.lost")

@@ -64,6 +64,7 @@ class Message:
             f.write(self.formatted_date + ':' + str(self.packet).replace('\n', '\\n') + '\n')
 
     def handle_packet(self):
+        print(f'{self.application}: {self.fromId} → {self.toId}', flush=True)
         if self.fromId is not None:
             self.fromName = self.fromId
             node = NodeData().lookup_by_id(self.fromId)
@@ -101,6 +102,7 @@ class Message:
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">View Details</a></li>
                 <li><a class="dropdown-item" href="#">Open in Map</a></li>
+                <li><a class="dropdown-item" href="#">Trace Route</a></li>    
             </ul>
         </div>
 """
@@ -118,7 +120,22 @@ class Message:
         self.add_node_to_ui('-', self.application)
 
     def handle_traceroute(self):
-        self.add_node_to_ui('TR', f'TRACEROUTE FROM: {self.fromId} to {self.toId}')
+        route_to =[]
+        route = [int(self.packet['toId'][1:],16)]
+        if 'route' in self.packet['decoded']['traceroute']:
+            for r in self.packet['decoded']['traceroute']['route']:
+                route.append(r)
+        route.append(int(self.packet['fromId'][1:],16))
+
+        for hop in route:
+            node_id = f'!{int(hop):08x}'
+            hop_node = NodeData().lookup_by_id(node_id)
+            if hop_node and hop_node.get('user.longName'):
+                node_id = hop_node.get('user.longName')
+            route_to.append(node_id)
+
+
+        self.add_node_to_ui('TR', f'Routing: {'→'.join(route_to)}')
 
     def handle_text(self):
         data = self.flatten_packet()
