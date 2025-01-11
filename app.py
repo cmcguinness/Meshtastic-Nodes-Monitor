@@ -8,8 +8,8 @@ from nodedata import NodeData
 import logging
 import threading
 
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+# log = logging.getLogger('werkzeug')
+# log.setLevel(logging.ERROR)
 
 logger = logging.getLogger(__name__)
 

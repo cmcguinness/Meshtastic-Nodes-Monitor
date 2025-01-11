@@ -4,7 +4,11 @@ from mesh import Mesh
 from nodedata import NodeData
 from status import Status
 import os
+import uuid
 
+# Generate a short UUID by truncating
+def short_uuid():
+    return str(uuid.uuid4())[:8]
 
 class Message:
     def __init__(self, interface, packet):
@@ -93,10 +97,11 @@ class Message:
                 self.handle_other()
 
     def add_node_to_ui(self, message_type, node_info_string):
+        id = 'id' + short_uuid()
         name = self.fromName.split(' ')
         name_html = f"""
-        <div class="dropdown">
-            <a class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+        <div id="{id}" class="dropdown">
+            <a  id="{id}" class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                 {name[0]}
             </a> {' '.join(name[1:])}
             <ul class="dropdown-menu">
@@ -106,7 +111,6 @@ class Message:
             </ul>
         </div>
 """
-        # name[0] = f'<a href="https://meshtastic.liamcottle.net/?node_id={self.packet.get('from')}" target="_blank">{name[0]}</a>'
 
         self.status.add_pkt(self.formatted_date,
             name_html,
