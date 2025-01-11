@@ -17,7 +17,7 @@ class MSGs():
         msg = MSG(msg_time = dt, msg_from = mf, msg_to = mto, msg_channel = ch, msg_text = mtxt)
 
         if len(self.messages) == self.msg_limit:
-            del self.messages[0]
+            del self.messages[-1]
 
         # insert msg at the front of self.messages
         self.messages.insert(0, msg)
@@ -55,7 +55,7 @@ class PKTs():
         pkt = PKT(pk_time = pti, pk_from=pf, pk_hops=str(ph), pk_rssi=str(pr), pk_type=pty, pk_info=pi)
 
         if len(self.packets) == self.msg_limit:
-            del self.packets[0]
+            del self.packets[-1]
 
         # insert msg at the front of self.messages
         self.packets.insert(0, pkt)
