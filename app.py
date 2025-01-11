@@ -23,7 +23,9 @@ flash_message = None
 @app.route('/')
 def index():
     m = Mesh()
-    return render_template('index.html', name=m.full_name)
+    voltage = m.node_data['deviceMetrics']['voltage']
+    batt_level = m.node_data['deviceMetrics']['batteryLevel']
+    return render_template('index.html', name=m.full_name, voltage=voltage, batt_level=batt_level)
 
 
 @app.route('/api/updates')
