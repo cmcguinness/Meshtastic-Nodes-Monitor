@@ -100,7 +100,7 @@ class Message:
         id = 'id' + short_uuid()
         name = self.fromName.split(' ')
         name_html = f"""
-        <div id="{id}" class="dropdown">
+        <div class="dropdown">
             <a  id="{id}" class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                 {name[0]}
             </a> {' '.join(name[1:])}

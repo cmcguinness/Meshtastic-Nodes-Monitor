@@ -11,7 +11,7 @@ class MSG(BaseModel):
 class MSGs():
     def __init__(self):
         self.messages : list[MSG] = []
-        self.msg_limit = 256
+        self.msg_limit = 1024
 
     def add(self, dt, mf, mto, ch, mtxt):
         msg = MSG(msg_time = dt, msg_from = mf, msg_to = mto, msg_channel = ch, msg_text = mtxt)
@@ -22,7 +22,7 @@ class MSGs():
         # insert msg at the front of self.messages
         self.messages.insert(0, msg)
 
-    def get_msgs(self):
+    def get_msgs(self, rowmax):
         msgs = []
         for msg in self.messages:
             msgs.append(
@@ -35,7 +35,7 @@ class MSGs():
                 }
             )
 
-        return msgs
+        return msgs[:rowmax]
 
 
 class PKT(BaseModel):
@@ -49,7 +49,7 @@ class PKT(BaseModel):
 class PKTs():
     def __init__(self):
         self.packets : list[PKT] = []
-        self.msg_limit = 256
+        self.msg_limit = 1024
 
     def add(self, pti, pf, ph, pr, pty, pi):
         pkt = PKT(pk_time = pti, pk_from=pf, pk_hops=str(ph), pk_rssi=str(pr), pk_type=pty, pk_info=pi)
@@ -60,7 +60,7 @@ class PKTs():
         # insert msg at the front of self.messages
         self.packets.insert(0, pkt)
 
-    def get_pkts(self):
+    def get_pkts(self, rowmax):
         pkts = []
         for pkt in self.packets:
             pkts.append(
@@ -74,7 +74,7 @@ class PKTs():
                 }
             )
 
-        return pkts
+        return pkts[:rowmax]
 
 
 class Status:
@@ -98,11 +98,11 @@ class Status:
         r = {'columns': [key for key in self.counts], 'values': [self.counts[key] for key in self.counts]}
         return r
 
-    def get_messages(self):
-        return self.messages.get_msgs()
+    def get_messages(self, rowmax):
+        return self.messages.get_msgs(rowmax)
 
-    def get_packets(self):
-        return self.packets.get_pkts()
+    def get_packets(self, rowmax):
+        return self.packets.get_pkts(rowmax)
 
     def add_msg(self, dt, mf, mto, ch, mtxt):
         self.messages.add(dt, mf, mto, ch, mtxt)

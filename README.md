@@ -4,15 +4,21 @@ This program was created because I wanted to have a better idea of what was goin
 
 It uses the Python API to talk to a local node over HTTP or Serial (although I'm sure you could modify it to work over BLE).
 
+## UI
+
+
+
 Here's what the display looks like:
 
 ![screenshot](doc/screenshot.png)
 
-Across the top are a count of packet types received.
+### Counts
 
-The left panel logs all text messages received; if they are encrypted and we cannot decode them, it simply says `*** ENCRYPTED TEXT ***`.
+Across the top are a count of packet types received along with a grand total.
 
-The right panel logs all packets seen and, in many cases, reports some interesting information from them (but by all means not all of the information).
+### Packets Received
+
+The first tab, Packest Received,  logs all packets seen and, in many cases, reports some interesting information from them (but by all means not all of the information).
 
 If you click on a node in the right panel, you have two choices:
 
@@ -23,6 +29,18 @@ Open in Map will open a Meshtastic map in a new tab and focus on the node in que
 View Details opens a pop-up:
 
 ![details](doc/details.png)
+
+
+
+### Messages
+
+The Messages tab logs all text messages received; if they are encrypted and we cannot decode them, it simply says `*** ENCRYPTED TEXT ***`.
+
+![messages-tab](doc/messages-tab.png)
+
+### Settings
+
+Settings allows you to control how often the browser polls the server for messages and how many rows to display.  When you refresh the page (or restart the application), they are reset to defaults.
 
 
 
@@ -81,7 +99,7 @@ There's a shell script, start.sh, that activates the virtual environment and run
 
 1. The program creates a file packetlog.txt with all the packets it receives during the run.  It's useful for debugging.  Unlike the display, which is limited to a maximum number of records, the file grows endlessly as the program is run.  It will be zeroed out when you restart the program, unless you set the environment variable `MM_APPEND_LOG` to something true-ish (like `1`)
 2. When the computer sleeps, the program gets lost.  Just restart it.
-3. There are times when Chrome says "Aw Snap!".  Not sure why, but just refresh the page and nothing is lost.
+3. There are times when Chrome says "Aw Snap!".  Not sure why, but just refresh the page and nothing is lost.  Safari does not have this problem.  It's strange.
 
 
 

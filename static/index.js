@@ -1,5 +1,3 @@
-let pause_update = false;   // Keep refreshes from happlening when a dropdown is open
-
 // function do_pause(yesno) {
 //     pause_update = Boolean(yesno);
 // }
@@ -36,21 +34,41 @@ function showToast(message) {
 
 // [Previous JavaScript code remains the same]
 // Settings management
-let updateInterval;
+let updateInterval = setInterval(updateTables, 5000);
+let updateIntervalSeconds = 5;
 let maxRows = 50;
-
 
 // Update the refresh interval
 function updateRefreshInterval(rate) {
     if (updateInterval) {
         clearInterval(updateInterval);
+
     }
     updateInterval = setInterval(updateTables, rate * 1000);
+    updateIntervalSeconds = rate;
 
 }
 
+
+function restoreSettings() {
+    document.getElementById("maxrows").value = maxRows.toString();
+    document.getElementById("refreshtime").value = updateIntervalSeconds.toString();
+}
+
+function updateSettings() {
+    maxRows = parseInt(document.getElementById("maxrows").value);
+    updateIntervalSeconds = parseInt(document.getElementById("refreshtime").value);
+    updateRefreshInterval(updateIntervalSeconds);
+}
+
+
+function changeMaxRows() {
+    maxRows = parseInt(document.getElementById("maxrows").value);
+    // console.log(`new maxrows ${maxrows}`)
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const dropdownItems = document.querySelectorAll('#refreshtime .dropdown-item');
     dropdownItems.forEach(item => {
         item.addEventListener('click', function (event) {
             event.preventDefault();
@@ -66,12 +84,13 @@ function handleSelectionChange(value) {
 }
 
 function updateTables() {
-    if (pause_update) {
+    if (document.querySelector('ul.show') !== null) {
+        console.log('Dropdown open, snoozing refresh')
         return;
     }
 
     console.log('updateTables()...');
-    fetch(`/api/updates?rowmax=${settings.maxRows}`)
+    fetch(`/api/updates?rowmax=${maxRows}`)
         .then(response => response.json())
         .then(data => {
             console.log('Data: ', data);
@@ -132,7 +151,7 @@ function updateTables() {
 updateTables();
 
 // Set up polling every 5 seconds
-setInterval(updateTables, 5000);
+
 
 function initializeTableActions(tableId) {
     document.getElementById(tableId).addEventListener('click', function (event) {

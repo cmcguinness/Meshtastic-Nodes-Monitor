@@ -30,12 +30,14 @@ def index():
 
 @app.route('/api/updates')
 def get_updates():
+    rowmax =int(request.args.get('rowmax'))
+
     # Demo data - replace with your actual data source
     summary_data = status.get_counts()
 
-    messages_data =  status.get_messages()
+    messages_data =  status.get_messages(rowmax)
 
-    packets_data = status.get_packets()
+    packets_data = status.get_packets(rowmax)
 
     global flash_message
     f = flash_message
