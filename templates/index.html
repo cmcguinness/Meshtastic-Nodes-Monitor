@@ -50,6 +50,14 @@
             border-bottom-color: #fff;
             box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
         }
+
+        .toast-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1050;
+        }
     </style>
 </head>
 <body>
@@ -148,7 +156,8 @@
                 <!-- Row 2 -->
                 <div class="row mt-5">
                     <div class="col">Maximum number of rows of data to display</div>
-                    <div class="col"><input id="maxrows" type="number" value="64" style="width: 10em;text-align: right;"></div>
+                    <div class="col"><input id="maxrows" type="number" value="64"
+                                            style="width: 10em;text-align: right;"></div>
                 </div>
 
                 <div class="row mt-5">

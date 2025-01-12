@@ -53,12 +53,14 @@ function updateRefreshInterval(rate) {
 function restoreSettings() {
     document.getElementById("maxrows").value = maxRows.toString();
     document.getElementById("refreshtime").value = updateIntervalSeconds.toString();
+    showToast('Settings Restored');
 }
 
 function updateSettings() {
     maxRows = parseInt(document.getElementById("maxrows").value);
     updateIntervalSeconds = parseInt(document.getElementById("refreshtime").value);
     updateRefreshInterval(updateIntervalSeconds);
+    showToast("Settings Updated");
 }
 
 
