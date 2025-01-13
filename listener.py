@@ -5,6 +5,7 @@ from pubsub import pub
 from message import Message
 import time
 import os
+from config import Config
 
 
 class Listener():
@@ -22,7 +23,8 @@ class Listener():
                     print('Connection error, retrying in 5')
                     time.sleep(5)
 
-        if not os.getenv('MM_APPEND_LOG'):
+        config = Config()
+        if not config.get('data.append_log', False):
             with open('packetlog.txt', 'w') as f:
                 f.write(get_datestamp() + ': Initialized\n')
         else:

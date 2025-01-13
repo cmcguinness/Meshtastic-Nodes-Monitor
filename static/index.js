@@ -117,9 +117,11 @@ function updateTables() {
 
             // Update messages table
             const messagesBody = document.querySelector('#messages-table tbody');
+            const doEncrypted = document.getElementById('include-encrypted').checked
             messagesBody.innerHTML = '';
             data.messages.forEach(msg => {
-                messagesBody.innerHTML += `
+                if (doEncrypted || msg.message !== '*** ENCRYPTED TEXT ***') {
+                    messagesBody.innerHTML += `
                             <tr>
                                 <td>${msg.datetime}</td>
                                 <td>                                    
@@ -140,9 +142,10 @@ function updateTables() {
                                 <td>${msg.message}</td>
                             </tr>
                         `;
+                }
             });
 
-            // Update messages table
+            // Update nodes table
             const nodesBody = document.querySelector('#nodes-table tbody');
             nodesBody.innerHTML = '';
             data.nodes.forEach(node => {
@@ -311,13 +314,13 @@ let lastPacketFilter = '';
 
 function reFilterPackets() {
     const filterInput = document.getElementById('packet-filter');
-        const filterText = lastPacketFilter;
-        const rows = document.querySelectorAll('#packets-table tbody tr');
+    const filterText = lastPacketFilter;
+    const rows = document.querySelectorAll('#packets-table tbody tr');
 
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(filterText) ? '' : 'none';
-        });
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filterText) ? '' : 'none';
+    });
 
 }
 
@@ -364,8 +367,8 @@ initializePacketFilter();
 
 // Create the tool tips
 
-  // Initialize Bootstrap tooltips
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+// Initialize Bootstrap tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
-  })
+})

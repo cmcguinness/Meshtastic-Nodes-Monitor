@@ -1,0 +1,18 @@
+#
+#   Edit this file to suit your needs and copy/rename to config.toml
+#
+# Used for distance calculations
+[location]
+my_latitude     =   40.12345        # As much precision as you like, but remember that Meshtastic reporting will
+my_longitude    = -120.12345        # typicaly futz your position unless you tell it to be precise.
+
+# Data Management in Application
+[data]
+append_log      = true              # Do we append to packetlog.txt on start, or create a new one?
+persist_data    = true              # Save mesages / packets between sessions?
+max_packets     = 1024              # Maximum number of rows of packets we keep on the server (vs. displayed to user)?
+max_messages    = 1024              # Maximum number of rows of messages we keep (vs. displayed to user)?
+
+# Control debugging features
+[debug]
+http_logging    = false             # Do we want to see HTTP logs for every call from the app?

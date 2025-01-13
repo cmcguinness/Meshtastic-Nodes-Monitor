@@ -1,6 +1,6 @@
-import time
 from mesh import Mesh
 from utilities import *
+
 
 class NodeData:
     _instance = None
@@ -52,7 +52,7 @@ class NodeData:
             self.refresh_data()
             for node in self.data:
                 if node['id'] == node_id:
-                    node['distance'] = int(calculate_distance((node.get('position.latitude'),node.get('position.longitude'))))
+                    node['distance'] = int(calculate_distance((node.get('position.latitude'), node.get('position.longitude'))))
                     if node.get('deviceMetrics.uptimeSeconds'):
                         node['formatted_uptime'] = format_seconds(node.get('deviceMetrics.uptimeSeconds'))
                     else:

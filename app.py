@@ -7,15 +7,13 @@ from mesh import Mesh
 from nodedata import NodeData
 import logging
 import threading
+from config import Config
+
 
 # This prevents the Werkzeug logger from printing to the console all the requests we receive
-# Comment out these lines if you want to see the requests
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
-
-
-logger = logging.getLogger(__name__)
-
+if not Config().get('data.http_logging', False):
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
 
 app = Flask(__name__)
 
@@ -148,5 +146,7 @@ if __name__ == '__main__':
         os.system(f'explorer "http:/127.0.0.1:{port}"')
     else:
         os.system(f'open http://127.0.0.1:{port}')
+
+    print(f'To reopen browser, go to: http://127.0.0.1:{port}')
     app.run(port=port, debug=False)
 

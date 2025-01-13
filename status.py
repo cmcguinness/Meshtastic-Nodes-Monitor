@@ -1,4 +1,7 @@
 from pydantic import BaseModel
+from config import Config
+import pickle
+import os
 
 class MSG(BaseModel):
     msg_time: str
@@ -12,7 +15,7 @@ class MSG(BaseModel):
 class MSGs():
     def __init__(self):
         self.messages : list[MSG] = []
-        self.msg_limit = 1024
+        self.msg_limit = Config().get('data.max_messages', 1024)
 
     def add(self, dt, mf, mto, ch, mtxt, from_id):
         msg = MSG(msg_time = dt, msg_from = mf, msg_to = mto, msg_channel = ch, msg_text = mtxt, msg_fromId = from_id)
@@ -52,7 +55,7 @@ class PKT(BaseModel):
 class PKTs():
     def __init__(self):
         self.packets : list[PKT] = []
-        self.msg_limit = 1024
+        self.msg_limit = Config().get('data.max_packets', 1024)
 
     def add(self, pti, pf, ph, pr, pty, pi, pid):
         pkt = PKT(pk_time = pti, pk_from=pf, pk_id=pid, pk_hops=str(ph), pk_rssi=str(pr), pk_type=pty, pk_info=pi)
@@ -93,10 +96,33 @@ class Status:
     def __init__(self):
         if not self.initialized:
             print("Status Initializing")
-            self.counts = {'Total': 0, 'Text': 0, 'Telemetry': 0, 'Position': 0, 'NodeInfo': 0, 'Other': 0}
-            self.packets = PKTs()
-            self.messages = MSGs()
+            self.config = Config()
+            self.counts = None
+            self.messages = None
+            self.packets = None
+            if self.config.get('data.persist_data'):
+                if os.path.exists('persisted_data.pkl'):
+                    with open('persisted_data.pkl', 'rb') as f:
+                        data = pickle.load(f)
+
+                    self.counts = data.get('counts')
+                    self.messages = data.get('messages')
+                    self.packets = data.get('packets')
+
+            if self.counts is None:
+                self.counts = {'Total': 0, 'Text': 0, 'Telemetry': 0, 'Position': 0, 'NodeInfo': 0, 'Other': 0}
+            if self.packets is None:
+                self.packets = PKTs()
+            if self.messages is None:
+                self.messages = MSGs()
+
         self.initialized = True
+
+    def persist(self):
+        if self.config.get('data.persist_data'):
+            data = { 'counts': self.counts, 'messages': self.messages, 'packets': self.packets}
+            with open('persisted_data.pkl', 'wb') as f:
+                pickle.dump(data, f)
 
     def get_counts(self):
         r = {'columns': [key for key in self.counts], 'values': [self.counts[key] for key in self.counts]}
@@ -110,13 +136,16 @@ class Status:
 
     def add_msg(self, dt, mf, mto, ch, mtxt, id):
         self.messages.add(dt, mf, mto, ch, mtxt, id)
+        self.persist()
 
     def add_pkt(self, pti, pf, ph, pr, pty, pi, pid):
         self.packets.add(pti, pf, ph, pr, pty, pi, pid)
+        self.persist()
 
     def add_count(self, name):
         self.counts[name] = 1 + self.counts.get(name, 0)
         self.counts['Total'] = 1 + self.counts.get('Total', 0)
+        self.persist()
 
 
 

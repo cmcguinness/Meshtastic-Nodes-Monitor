@@ -3,7 +3,7 @@ from utilities import get_datestamp, format_seconds, calculate_distance
 from mesh import Mesh
 from nodedata import NodeData
 from status import Status
-import os
+from config import Config
 import uuid
 
 # Generate a short UUID by truncating
@@ -179,8 +179,9 @@ class Message:
         position = self.decoded.get('position', {})
         node_lat = position.get("latitude", None)
         node_long = position.get("longitude", None)
-        my_lat = os.getenv('my_latitude', None)
-        my_long = os.getenv('my_longitude', None)
+        config = Config()
+        my_lat = config.get('position.my_latitude', None)
+        my_long = config.get('position.my_longitude', None)
 
         distance = ''
         if all([node_lat, node_long, my_lat, my_long]):

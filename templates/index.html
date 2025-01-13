@@ -18,10 +18,20 @@
     <link rel="manifest" href="/static/site.webmanifest">
 </head>
 <body>
-<!-- Toast container -->
+<!--
+    ┌──────────────────────────────────────────────────────────┐
+    │                     Toast Container                      │
+    └──────────────────────────────────────────────────────────┘
+-->
 <div class="toast-container"></div>
 
-<nav class="navbar bg-primary" data-bs-theme="dark">
+
+<!--
+    ┌──────────────────────────────────────────────────────────┐
+    │                  Navigation Bar on Top                   │
+    └──────────────────────────────────────────────────────────┘
+-->
+<nav class="navbar bg-primary mb-4" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="#"><span
                 style="font-weight: bold;font-size: larger;"><img src="/static/favicon-128x128.png"
@@ -31,8 +41,11 @@
     </div>
 </nav>
 
-<p>&nbsp;</p>
-
+<!--
+    ┌──────────────────────────────────────────────────────────┐
+    │                      Packet Counts                       │
+    └──────────────────────────────────────────────────────────┘
+-->
 <div class="container-fluid">
     <h2>Packet Totals</h2>
     <table id="summary-table" class="table table-bordered">
@@ -74,14 +87,20 @@
         </li>
     </ul>
 
-    <!--
-        ┌────────────────────────────────────────────────────────────────────┐
-        │                            Tabs Content                            │
-        └────────────────────────────────────────────────────────────────────┘
-    -->
+<!--
+    ╔══════════════════════════════════════════════════════════╗
+    ║                       Tabs Content                       ║
+    ╚══════════════════════════════════════════════════════════╝
+-->
+
     <div class="tab-content" id="monitorTabsContent">
 
-        <!--                         Packets                              -->
+
+        <!--
+            ┌──────────────────────────────────────────────────────────┐
+            │                       Packets Tab                        │
+            └──────────────────────────────────────────────────────────┘
+        -->
         <div class="tab-pane fade show active" id="packets" role="tabpanel" aria-labelledby="packets-tab">
             <div class="container-fluid">
                 <div class="row mb-3 align-items-end">
@@ -94,11 +113,7 @@
                             <button class="btn btn-secondary ml-1" type="button" id="reset-filter">Reset</button>
                         </div>
                     </div>
-                    {#                    <div class="col align-text-bottom" style="font-size: x-large;">#}
-                    {#                        <em id="current-packet-filter"></em>#}
-                    {#                    </div>#}
                     <div class="col"></div>
-
                 </div>
                 <div class="row">
                     <table id="packets-table" class="table table-striped">
@@ -119,7 +134,11 @@
             </div>
         </div>
 
-        <!--                         Messages                              -->
+        <!--
+            ┌──────────────────────────────────────────────────────────┐
+            │                       Messages Tab                       │
+            └──────────────────────────────────────────────────────────┘
+        -->
         <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab">
             <div class="container-fluid">
                 <div class="row mb-3 align-items-end">
@@ -150,7 +169,11 @@
             </table>
         </div>
 
-        <!--                         Nodes                              -->
+        <!--
+            ┌──────────────────────────────────────────────────────────┐
+            │                        Nodes Tab                         │
+            └──────────────────────────────────────────────────────────┘
+        -->
         <div class="tab-pane fade" id="nodes" role="tabpanel" aria-labelledby="nodes-tab">
             <table id="nodes-table" class="table table-striped">
                 <thead>
@@ -167,7 +190,11 @@
             </table>
         </div>
 
-        <!--                         Settings                              -->
+        <!--
+            ┌──────────────────────────────────────────────────────────┐
+            │                       Settings Tab                       │
+            └──────────────────────────────────────────────────────────┘
+        -->
         <div class="tab-pane fade  " id="settings" role="tabpanel" aria-labelledby="settings-tab">
             <div class="container mt-5">
                 <!-- Row 1 -->
@@ -204,7 +231,11 @@
     </div>
 </div>
 
-<!-- Dynamic Modal -->
+<!--
+    ┌──────────────────────────────────────────────────────────┐
+    │         Dynamic Modal (Used for Details Pop-up)          │
+    └──────────────────────────────────────────────────────────┘
+-->
 <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

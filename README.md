@@ -6,31 +6,32 @@ It uses the Python API to talk to a local node over HTTP or Serial (although I'm
 
 ## UI
 
+The UI consists of:
+
+* A header bar that tells you what node you're connected to, how you're connected to it, and power stats.  Note that the power stats are not updated after the program starts.
+
+* Counts at the top of packets received
+* A set of tabs that display various types of data: Packets Received, Messages, Nodes, and Settings
 
 
-Here's what the display looks like:
+
+### Packets Received Tab
+
+This tab displays a list of the most recent packets received by the node, not just messages.  You can filter the list to only show packets that match a certain string so, for example, you can find packets from a certain node.
 
 ![screenshot](doc/screenshot.png)
 
-### Counts
-
-Across the top are a count of packet types received along with a grand total.
-
-### Packets Received
-
-The first tab, Packest Received,  logs all packets seen and, in many cases, reports some interesting information from them (but by all means not all of the information).
-
-If you click on a node in the right panel, you have two choices:
+If you click on the Node Id, a pop-up menu opens:
 
 ![packetmenu](doc/packetmenu.png)
-
-Open in Map will open a Meshtastic map in a new tab and focus on the node in question.
 
 View Details opens a pop-up:
 
 ![details](doc/details.png)
 
+Open in Map will open a Meshtastic map in a new tab and focus on the node in question.
 
+Trace Route will send a trace route message to the node.  If it responds (eventually), you'll see its response in the list of packets received.
 
 ### Messages
 
@@ -38,9 +39,24 @@ The Messages tab logs all text messages received; if they are encrypted and we c
 
 ![messages-tab](doc/messages-tab.png)
 
+If `Include encrypted messages?` is unchecked, encrypted messages will not be shown in the list.  You might want to see encrypted messages to help you debug why a private channel isn't working: did you get the message at all vs. you can't decrypt it (because you don't have the keys correct).
+
+If you click on From Id, you get the same pop-up menu as on the packets received tab.
+
+### Nodes
+
+![nodes](doc/nodes.png)
+
+The nodes tab displays the nodes that the device knows about, sorted by last heard from most to least recent.  As before, clicking on the node id pops-up the menu for displaying more information, showing the node on a map, or sending a trace route to it.
+
 ### Settings
 
-Settings allows you to control how often the browser polls the server for messages and how many rows to display.  When you refresh the page (or restart the application), they are reset to defaults.
+Settings allows you to control:
+
+* How often the browser polls the server for messages and how many rows to display.
+* How many rows of data to show in the UI (vs how many are on the server)
+
+![settings](doc/settings.png)
 
 
 
@@ -65,14 +81,30 @@ pip install -r requirements.txt
 
 
 
-You need to have two environment variables set to indicate your location (for distance calculations):
+Before you can run the application, you need to edit sample-config.toml and rename it to config.toml.  It looks like:
 
-```sh
-export my_latitude=32.12345
-export my_longitude=-118.12345
+```toml
+#
+#   Edit this file to suit your needs and copy/rename to config.toml
+#
+# Used for distance calculations
+[location]
+my_latitude     =   40.12345        # As much precision as you like, but remember that Meshtastic reporting will
+my_longitude    = -120.12345        # typicaly futz your position unless you tell it to be precise.
+
+# Data Management in Application
+[data]
+append_log      = true              # Do we append to packetlog.txt on start, or create a new one?
+persist_data    = true              # Save mesages / packets between sessions?
+max_packets     = 1024              # Maximum number of rows of packets we keep on the server (vs. displayed to user)?
+max_messages    = 1024              # Maximum number of rows of messages we keep (vs. displayed to user)?
+
+# Control debugging features
+[debug]
+http_logging    = false             # Do we want to see HTTP logs for every call from the app?
 ```
 
-With your lat/long, of course.
+Be sure to update the lat/long.
 
 
 
@@ -97,9 +129,10 @@ There's a shell script, start.sh, that activates the virtual environment and run
 
 
 
-1. The program creates a file packetlog.txt with all the packets it receives during the run.  It's useful for debugging.  Unlike the display, which is limited to a maximum number of records, the file grows endlessly as the program is run.  It will be zeroed out when you restart the program, unless you set the environment variable `MM_APPEND_LOG` to something true-ish (like `1`)
-2. When the computer sleeps, the program gets lost.  Just restart it.
-3. There are times when Chrome says "Aw Snap!".  Not sure why, but just refresh the page and nothing is lost.  Safari does not have this problem.  It's strange.
+1. The program creates a file packetlog.txt with all the packets it receives during the run.  It's useful for debugging.  Unlike the display, which is limited to a maximum number of records, the file grows endlessly as the program is run.  It will be zeroed out when you restart the program, unless you set the environment variable `append_log` to `true`
+2. If you have `persist_data` set to `true`, it creates a file `persisted_data.pkl` that holds the data from packets, messages, and counts so that when you restart the program it picks up where it left off.  (Node data is persisted in the device itself, so we do not need to replicate it.)
+3. When the computer sleeps, the program gets lost.  Just restart it.
+4. There are times when Chrome says "Aw Snap!".  Not sure why, but just refresh the page and nothing is lost.  Safari does not have this problem.  It's strange.
 
 
 
