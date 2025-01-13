@@ -99,25 +99,15 @@ class Message:
     def add_node_to_ui(self, message_type, node_info_string):
         id = 'id' + short_uuid()
         name = self.fromName.split(' ')
-        name_html = f"""
-        <div class="dropdown">
-            <a  id="{id}" class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
-                {name[0]}
-            </a> {' '.join(name[1:])}
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">View Details</a></li>
-                <li><a class="dropdown-item" href="#">Open in Map</a></li>
-                <li><a class="dropdown-item" href="#">Trace Route</a></li>    
-            </ul>
-        </div>
-"""
 
-        self.status.add_pkt(self.formatted_date,
-            name_html,
+        self.status.add_pkt(
+            self.formatted_date,
+            ' '.join(name[1:]),
             self.hops,
             self.packet.get('rxRssi', ''),
             message_type,
             node_info_string,
+            self.fromId
         )
 
     def handle_other(self):
@@ -154,7 +144,7 @@ class Message:
             text = data['text']
         else:
             text = '*** ENCRYPTED TEXT ***'
-        self.status.add_msg(data['received'], data['fromName'], data['toName'], data['channel'], text)
+        self.status.add_msg(data['received'], data['fromName'], data['toName'], data['channel'], text, self.fromId)
 
         self.add_node_to_ui('Text', text[:32])
 

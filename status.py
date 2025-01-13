@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 class MSG(BaseModel):
     msg_time: str
+    msg_fromId: str
     msg_from: str
     msg_to: str
     msg_channel: str
@@ -13,8 +14,8 @@ class MSGs():
         self.messages : list[MSG] = []
         self.msg_limit = 1024
 
-    def add(self, dt, mf, mto, ch, mtxt):
-        msg = MSG(msg_time = dt, msg_from = mf, msg_to = mto, msg_channel = ch, msg_text = mtxt)
+    def add(self, dt, mf, mto, ch, mtxt, from_id):
+        msg = MSG(msg_time = dt, msg_from = mf, msg_to = mto, msg_channel = ch, msg_text = mtxt, msg_fromId = from_id)
 
         if len(self.messages) == self.msg_limit:
             del self.messages[-1]
@@ -28,6 +29,7 @@ class MSGs():
             msgs.append(
                 {
                     "datetime": msg.msg_time,
+                    "id": msg.msg_fromId,
                     "from": msg.msg_from,
                     "to": msg.msg_to,
                     "channel": msg.msg_channel,
@@ -41,6 +43,7 @@ class MSGs():
 class PKT(BaseModel):
     pk_time: str
     pk_from: str
+    pk_id: str
     pk_hops: str
     pk_rssi: str
     pk_type: str
@@ -51,8 +54,8 @@ class PKTs():
         self.packets : list[PKT] = []
         self.msg_limit = 1024
 
-    def add(self, pti, pf, ph, pr, pty, pi):
-        pkt = PKT(pk_time = pti, pk_from=pf, pk_hops=str(ph), pk_rssi=str(pr), pk_type=pty, pk_info=pi)
+    def add(self, pti, pf, ph, pr, pty, pi, pid):
+        pkt = PKT(pk_time = pti, pk_from=pf, pk_id=pid, pk_hops=str(ph), pk_rssi=str(pr), pk_type=pty, pk_info=pi)
 
         if len(self.packets) == self.msg_limit:
             del self.packets[-1]
@@ -66,7 +69,8 @@ class PKTs():
             pkts.append(
                 {
                     "datetime": pkt.pk_time,
-                    "node": pkt.pk_from,
+                    "id": pkt.pk_id,
+                    "name": pkt.pk_from,
                     "hops": pkt.pk_hops,
                     "rssi": pkt.pk_rssi,
                     "type": pkt.pk_type,
@@ -104,11 +108,11 @@ class Status:
     def get_packets(self, rowmax):
         return self.packets.get_pkts(rowmax)
 
-    def add_msg(self, dt, mf, mto, ch, mtxt):
-        self.messages.add(dt, mf, mto, ch, mtxt)
+    def add_msg(self, dt, mf, mto, ch, mtxt, id):
+        self.messages.add(dt, mf, mto, ch, mtxt, id)
 
-    def add_pkt(self, pti, pf, ph, pr, pty, pi):
-        self.packets.add(pti, pf, ph, pr, pty, pi)
+    def add_pkt(self, pti, pf, ph, pr, pty, pi, pid):
+        self.packets.add(pti, pf, ph, pr, pty, pi, pid)
 
     def add_count(self, name):
         self.counts[name] = 1 + self.counts.get(name, 0)

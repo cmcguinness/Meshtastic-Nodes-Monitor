@@ -6,7 +6,7 @@ import sys
 
 
 #   If using TCP/IP
-DEFAULT_DEVICE = '192.168.5.51'
+DEFAULT_DEVICE = '192.168.5.50'
 
 #   If using Serial
 # DEFAULT_DEVICE = "/dev/cu.usbserial-0001"

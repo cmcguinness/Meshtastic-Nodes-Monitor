@@ -8,8 +8,11 @@ from nodedata import NodeData
 import logging
 import threading
 
-# log = logging.getLogger('werkzeug')
-# log.setLevel(logging.ERROR)
+# This prevents the Werkzeug logger from printing to the console all the requests we receive
+# Comment out these lines if you want to see the requests
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +38,11 @@ def get_updates():
     # Demo data - replace with your actual data source
     summary_data = status.get_counts()
 
-    messages_data =  status.get_messages(rowmax)
+    messages_data = status.get_messages(rowmax)
 
     packets_data = status.get_packets(rowmax)
+
+    nodes_data = NodeData().get_nodes()[:rowmax]
 
     global flash_message
     f = flash_message
@@ -46,6 +51,7 @@ def get_updates():
         "summary": summary_data,
         "messages": messages_data,
         "packets": packets_data,
+        "nodes": nodes_data,
         "flash": f
     })
 

@@ -122,10 +122,49 @@ function updateTables() {
                 messagesBody.innerHTML += `
                             <tr>
                                 <td>${msg.datetime}</td>
+                                <td>                                    
+                                    <div class="dropdown">
+                                        <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                                            ${msg.id}
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Open in Map</a></li>
+                                            <li><a class="dropdown-item" href="#">Trace Route</a></li>    
+                                        </ul>
+                                    </div>
+                                </td>
                                 <td>${msg.from}</td>
                                 <td>${msg.to}</td>
                                 <td>${msg.channel}</td>
                                 <td>${msg.message}</td>
+                            </tr>
+                        `;
+            });
+
+            // Update messages table
+            const nodesBody = document.querySelector('#nodes-table tbody');
+            nodesBody.innerHTML = '';
+            data.nodes.forEach(node => {
+                nodesBody.innerHTML += `
+                            <tr>
+                                <td>${node.lastHeard}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                                            ${node.id}
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Open in Map</a></li>
+                                            <li><a class="dropdown-item" href="#">Trace Route</a></li>    
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>${node.name}</td>
+                                <td>${node.hwModel}</td>
+                                <td>${node.hopsAway}</td>
+                                <td>${node.distance}</td>
                             </tr>
                         `;
             });
@@ -137,13 +176,26 @@ function updateTables() {
                 packetsBody.innerHTML += `
                             <tr>
                                 <td>${packet.datetime}</td>
-                                <td>${packet.node}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
+                                            ${packet.id}
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Open in Map</a></li>
+                                            <li><a class="dropdown-item" href="#">Trace Route</a></li>    
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>${packet.name}</td>
                                 <td>${packet.hops}</td>
                                 <td>${packet.rssi}</td>
                                 <td>${packet.type}</td>
                                 <td>${packet.information}</td>
                             </tr>
                         `;
+                reFilterPackets();
             });
         })
         .catch(error => console.error('Error fetching updates:', error));
@@ -171,12 +223,7 @@ function initializeTableActions(tableId) {
         const cells = Array.from(row.cells);
 
         const rowData = {
-            dateTime: cells[0]?.textContent.trim(),
             node: cells[1]?.textContent.trim(),
-            hops: cells[2]?.textContent.trim(),
-            rssi: cells[3]?.textContent.trim(),
-            type: cells[4]?.textContent.trim(),
-            information: cells[5]?.textContent.trim(),
             action: dropdownItem.textContent.trim()
         };
 
@@ -260,4 +307,65 @@ function showDetailsModal(id) {
         });
 }
 
+let lastPacketFilter = '';
+
+function reFilterPackets() {
+    const filterInput = document.getElementById('packet-filter');
+        const filterText = lastPacketFilter;
+        const rows = document.querySelectorAll('#packets-table tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filterText) ? '' : 'none';
+        });
+
+}
+
+// Initialize filter functionality
+function initializePacketFilter() {
+    const filterInput = document.getElementById('packet-filter');
+    const applyFilterButton = document.getElementById('apply-filter');
+    const resetFilterButton = document.getElementById('reset-filter');
+
+    function filterPackets() {
+        const filterText = filterInput.value.toLowerCase();
+        lastPacketFilter = filterText;
+        reFilterPackets();
+        // document.getElementById("current-packet-filter").innerHTML = `Filtering List on "${filterText}"`;
+        filterInput.placeholder = 'Filtering on "' + filterText + '"';
+        filterInput.value = '';
+    }
+
+    function resetFilter() {
+        filterInput.value = '';
+        lastPacketFilter = '';
+        reFilterPackets();
+        // document.getElementById("current-packet-filter").innerHTML = '';
+        filterInput.placeholder = 'Enter a Filter ...';
+    }
+
+    applyFilterButton.addEventListener('click', filterPackets);
+    resetFilterButton.addEventListener('click', resetFilter);
+
+    // Add Enter key support for the filter input
+    filterInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            filterPackets();
+        }
+    });
+}
+
 initializeTableActions("packets-table");
+initializeTableActions("nodes-table");
+initializeTableActions("messages-table");
+
+// Initialize the packet filter
+initializePacketFilter();
+
+// Create the tool tips
+
+  // Initialize Bootstrap tooltips
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })

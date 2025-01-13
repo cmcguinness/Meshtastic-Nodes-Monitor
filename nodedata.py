@@ -66,3 +66,54 @@ class NodeData:
             print(e, flush=True)
             raise e
 
+    def get_nodes(self):
+        self.refresh_data()
+        self.flatten_data()
+        nodes = []
+        mapping = [
+            ('id', 'id'),
+            ('hopsAway', 'hopsAway'),
+            ('publicKey', 'publicKey'),
+            ('latittude', 'posistion.latittude'),
+            ('longitude', 'posistion.longitude'),
+            ('altitude', 'posistion.altitude'),
+            ('hwModel', 'user.hwModel')
+        ]
+
+        for node in self.data:
+            ndata = {}
+            for m in mapping:
+                ndata[m[0]] = node.get(m[1])
+            name = node['id']
+            probe = node.get('user.shortName')
+            if probe:
+                name = probe
+            probe = node.get('user.longName')
+            if probe:
+                name = probe + '[' + name + ']'
+            ndata['name'] = name
+
+            if node.get('position.latitude') and node.get('position.longitude'):
+                lat = node.get('position.latitude')
+                long = node.get('position.longitude')
+                ndata['distance'] = f'{calculate_distance((lat, long)):.2f}  km'
+            else:
+                ndata['distance'] = 'Unknown'
+
+            if node.get('lastHeard'):
+                ndata['lastHeard'] = datetime.fromtimestamp(node.get('lastHeard')).strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                ndata['lastHeard'] = '0000'
+
+            nodes.append(ndata)
+
+        # Sort nodes by nodes['lastHeard']
+        nodes = sorted(nodes, key=lambda x: x['lastHeard'], reverse=True)
+
+        # Hack to make unknown go to the bottom
+
+        for n in nodes:
+            if n['lastHeard'] == '0000':
+                n['lastHeard'] = 'Unknown'
+
+        return nodes
