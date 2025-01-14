@@ -1,5 +1,7 @@
 import tomllib
+import logging
 
+logger = logging.getLogger(__name__)
 
 class Config:
     _instance = None
@@ -27,6 +29,7 @@ class Config:
             keys = keys.split('.')
         for key in keys:
             if key not in data:
+                logger.warning(f'Key {keys} not found in config file.')
                 return default
             data = data[key]
         return data

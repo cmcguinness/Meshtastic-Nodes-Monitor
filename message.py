@@ -180,8 +180,8 @@ class Message:
         node_lat = position.get("latitude", None)
         node_long = position.get("longitude", None)
         config = Config()
-        my_lat = config.get('position.my_latitude', None)
-        my_long = config.get('position.my_longitude', None)
+        my_lat = config.get('location.latitude', None)
+        my_long = config.get('location.longitude', None)
 
         distance = ''
         if all([node_lat, node_long, my_lat, my_long]):

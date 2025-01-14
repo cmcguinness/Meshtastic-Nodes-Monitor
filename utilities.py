@@ -1,12 +1,13 @@
 from datetime import datetime
 import time
 from geopy.distance import geodesic
-import os
+from config import Config
 
 def calculate_distance(coord1, coord2=None):
     if coord2 is None:
-        my_lat = os.getenv('my_latitude', None)
-        my_long = os.getenv('my_longitude', None)
+        c = Config()
+        my_lat = c.get('location.latitude', None)
+        my_long = c.get('location.longitude', None)
         coord2 = (my_lat, my_long)
 
     if not any([coord1[0], coord1[1], coord2[0], coord2[1]]):

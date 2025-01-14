@@ -97,7 +97,7 @@ function updateTables() {
         .then(data => {
             console.log('Data: ', data);
             if (data.hasOwnProperty('flash') && data['flash'] !== null) {
-                window.alert(data.flash)
+                showToast(data.flash)
             }
             // Update summary table
             const summaryHeaders = document.getElementById('summary-headers');

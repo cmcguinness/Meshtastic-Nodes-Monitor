@@ -11,7 +11,7 @@ from config import Config
 
 
 # This prevents the Werkzeug logger from printing to the console all the requests we receive
-if not Config().get('data.http_logging', False):
+if not Config().get('debug.http_logging', False):
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
@@ -62,9 +62,9 @@ def send_trace_route_in_thread(dest, hopLimit, channelIndex):
         # print('Sending traceroute...', flush=True)
         Mesh().node.sendTraceRoute(dest, hopLimit, channelIndex=channelIndex)
     except Exception as e:
-        print('TraceRoute EXCEPTION:')
-        print(e)
-        # flash_message = 'Trace Route Failed'
+        l = logging.getLogger(__name__)
+        l.info(f'TraceRoute EXCEPTION: {e}')
+        flash_message = 'Trace Route Failed'
 
     # print('Traceroute finished', flush=True)
 
@@ -81,10 +81,10 @@ def do_traceroute():
     if node is None:
         node = {}
 
-    hopLimit = 3
+    hopLimit = 4
     dest = int(item_id, 16)
     if 'hopsAway' in node and node['hopsAway']:
-        hopLimit = max(node['hopsAway'], hopLimit)
+        hopLimit = min(7,max(node['hopsAway']+1, hopLimit))
     print(f'Trace Route to {item_id} with {hopLimit} hops')
     channelIndex = 0
 
