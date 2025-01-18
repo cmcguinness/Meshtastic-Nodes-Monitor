@@ -3,8 +3,8 @@
 #
 # Used for distance calculations
 [location]
-my_latitude     =   40.12345        # As much precision as you like, but remember that Meshtastic reporting will
-my_longitude    = -120.12345        # typicaly futz your position unless you tell it to be precise.
+latitude     =   40.12345        # As much precision as you like, but remember that Meshtastic reporting will
+longitude    = -120.12345        # typicaly futz your position unless you tell it to be precise.
 
 # Data Management in Application
 [data]
