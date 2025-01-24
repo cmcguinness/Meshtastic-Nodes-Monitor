@@ -171,6 +171,7 @@ function updateTables() {
                             </tr>
                         `;
             });
+            resortAfterDataRefresh()
 
             // Update packets table
             const packetsBody = document.querySelector('#packets-table tbody');
@@ -372,3 +373,105 @@ var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggl
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
 })
+
+
+// Sorting the nodes list
+// First, let's enhance the HTML with sort indicators
+document.querySelectorAll('#nodes-table th').forEach(th => {
+    th.style.cursor = 'pointer';
+    // Add sort indicator span
+    const indicator = document.createElement('span');
+    indicator.className = 'sort-indicator ms-1';
+    indicator.innerHTML = '↕️'; // Default state
+    th.appendChild(indicator);
+});
+
+// Track current sort state
+let currentSort = {
+    column: null,
+    ascending: true
+};
+
+// Function to update sort indicators
+function updateSortIndicators(activeHeader) {
+    document.querySelectorAll('#nodes-table th .sort-indicator').forEach(indicator => {
+        if (indicator.parentElement === activeHeader) {
+            indicator.innerHTML = currentSort.ascending ? '↑' : '↓';
+        } else {
+            indicator.innerHTML = '↕️';
+        }
+    });
+}
+
+// Function to compare values for sorting
+function compareValues(a, b, ascending) {
+    // Handle dates specifically for "Last Heard" column
+    if (a instanceof Date && b instanceof Date) {
+        return ascending ? a - b : b - a;
+    }
+
+    // Handle numeric values (like Hops Away and Distance)
+    if (!isNaN(a) && !isNaN(b)) {
+        return ascending ? a - b : b - a;
+    }
+
+    // Default string comparison
+    const strA = String(a).toLowerCase();
+    const strB = String(b).toLowerCase();
+    return ascending ? strA.localeCompare(strB) : strB.localeCompare(strA);
+}
+
+// Main sorting function that can be called programmatically
+function sortTable(columnIndex, ascending = null) {
+    const tbody = document.querySelector('#nodes-table tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const th = document.querySelector(`#nodes-table th:nth-child(${columnIndex + 1})`);
+
+    // If ascending is null, toggle the current direction
+    if (ascending === null) {
+        if (currentSort.column === columnIndex) {
+            currentSort.ascending = !currentSort.ascending;
+        } else {
+            currentSort.ascending = true;
+        }
+    } else {
+        currentSort.ascending = ascending;
+    }
+
+    currentSort.column = columnIndex;
+
+    // Sort the rows
+    rows.sort((rowA, rowB) => {
+        let a = rowA.cells[columnIndex].textContent.trim();
+        let b = rowB.cells[columnIndex].textContent.trim();
+
+        // Convert to Date if it's the Last Heard column
+        if (columnIndex === 0) {
+            a = new Date(a);
+            b = new Date(b);
+        }
+        // Convert to number for numeric columns
+        else if (columnIndex === 4 || columnIndex === 5) {
+            a = parseFloat(a);
+            b = parseFloat(b);
+        }
+
+        return compareValues(a, b, currentSort.ascending);
+    });
+
+    // Update the DOM
+    rows.forEach(row => tbody.appendChild(row));
+    updateSortIndicators(th);
+}
+
+// Add click handlers to all headers
+document.querySelectorAll('#nodes-table th').forEach((th, index) => {
+    th.addEventListener('click', () => sortTable(index));
+});
+
+// Example of how to resort programmatically after data refresh
+function resortAfterDataRefresh() {
+    if (currentSort.column !== null) {
+        sortTable(currentSort.column, currentSort.ascending);
+    }
+}

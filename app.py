@@ -26,7 +26,8 @@ def index():
     m = Mesh()
     voltage = m.node_data['deviceMetrics']['voltage']
     batt_level = m.node_data['deviceMetrics']['batteryLevel']
-    return render_template('index.html', name=m.full_name, voltage=voltage, batt_level=batt_level)
+    firmware_version = m.node.metadata.firmware_version
+    return render_template('index.html', name=m.full_name, voltage=voltage, batt_level=batt_level, version=firmware_version)
 
 
 @app.route('/api/updates')
