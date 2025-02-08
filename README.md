@@ -21,7 +21,9 @@ This tab displays a list of the most recent packets received by the node, not ju
 
 ![screenshot](doc/screenshot.png)
 
-If you click on the Node Id, a pop-up menu opens:
+I
+
+f you click on the Node Id, a pop-up menu opens (this works on any tab a Node Id is shown):
 
 ![packetmenu](doc/packetmenu.png)
 
@@ -33,11 +35,21 @@ Open in Map will open a Meshtastic map in a new tab and focus on the node in que
 
 Trace Route will send a trace route message to the node.  If it responds (eventually), you'll see its response in the list of packets received.
 
+The Send DM choice will allow you to send a message just to that node:
+
+![direct-message](doc/direct-message.png)
+
+
+
+
+
 ### Messages
 
 The Messages tab logs all text messages received; if they are encrypted and we cannot decode them, it simply says `*** ENCRYPTED TEXT ***`.
 
 ![messages-tab](doc/messages-tab.png)
+
+At the top is a collapsible section labeld "Channels List", which you can expand or contract to show the channels known to your device.  The "Send Message" button can be used to send a message to the entire channel.
 
 If `Include encrypted messages?` is unchecked, encrypted messages will not be shown in the list.  You might want to see encrypted messages to help you debug why a private channel isn't working: did you get the message at all vs. you can't decrypt it (because you don't have the keys correct).
 

@@ -67,31 +67,35 @@
                     style="border: 1px solid #dee2e6;">Packets Received
             </button>
         </li>
+
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold fs-5 py-3" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages"
                     type="button" role="tab" aria-controls="messages" aria-selected="false" tab-index="=1"
                     style="border: 1px solid #dee2e6;">Messages
             </button>
         </li>
+
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold fs-5 py-3" id="nodes-tab" data-bs-toggle="tab" data-bs-target="#nodes"
                     type="button" role="tab" aria-controls="nodes" aria-selected="false" tab-index="=1"
                     style="border: 1px solid #dee2e6;">Nodes
             </button>
         </li>
+
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold fs-5 py-3" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings"
                     type="button" role="tab" aria-controls="settings" aria-selected="false" tab-index="=1"
                     style="border: 1px solid #dee2e6;">Settings
             </button>
         </li>
+
     </ul>
 
-<!--
-    ╔══════════════════════════════════════════════════════════╗
-    ║                       Tabs Content                       ║
-    ╚══════════════════════════════════════════════════════════╝
--->
+    <!--
+        ╔══════════════════════════════════════════════════════════╗
+        ║                       Tabs Content                       ║
+        ╚══════════════════════════════════════════════════════════╝
+    -->
 
     <div class="tab-content" id="monitorTabsContent">
 
@@ -140,7 +144,52 @@
             └──────────────────────────────────────────────────────────┘
         -->
         <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab">
-            <div class="container-fluid">
+
+
+            <div class="accordion" id="channelAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            Channels List
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                         data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <table class="table">
+                                <thead>
+                                <!-- colums are: 'index', 'name', 'psk', 'psk_bits', 'role' -->
+                                <tr>
+                                    <th>Index</th>
+                                    <th>Name</th>
+                                    <th>PSK</th>
+                                    <th>PSK Bits</th>
+                                    <th>Role</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for ch in channels %}
+                                    <tr>
+                                        <td>{{ ch.index }}</td>
+                                        <td>{{ ch.name }}</td>
+                                        <td>{{ ch.psk }}</td>
+                                        <td>{{ ch.psk_bits }}</td>
+                                        <td>{{ ch.role }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary" onclick="showChannelModal({{ ch.index }}, '{{ ch.name }}')">Send Message</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container-fluid mt-3">
                 <div class="row mb-3 align-items-end">
                     <div class="col"></div>
                     <div class="form-check col" style="font-size: x-large;">
@@ -233,10 +282,10 @@
 
 <!--
     ┌──────────────────────────────────────────────────────────┐
-    │         Dynamic Modal (Used for Details Pop-up)          │
+    │         Details Modal (Used for Details Pop-up)          │
     └──────────────────────────────────────────────────────────┘
 -->
-<div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="detailsModel" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -248,6 +297,58 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    ┌───────────────────────────────────────────────────────────┐
+    │                       Send DM Modal                       │
+    └───────────────────────────────────────────────────────────┘
+-->
+<div class="modal fade" id="dmModal" tabindex="-1" aria-labelledby="dmmodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dmmodalLabel">Direct Message <span id="dmId"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input for the message -->
+                <label for="dm-message" class="form-label">Message:</label>
+                <input type="text" id="dm-message" class="form-control" placeholder="Enter message...">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sendDM();">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    ┌───────────────────────────────────────────────────────────┐
+    │                    Send Channel Modal                     │
+    └───────────────────────────────────────────────────────────┘
+-->
+<div class="modal fade" id="channelModal" tabindex="-1" aria-labelledby="channelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="channelModalLabel">Send to Channel #<span id="channelId"></span> <span
+                        id="channelName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input for the message -->
+                <label for="hannelMessage" class="form-label">Message:</label>
+                <input type="text" id="channelMessage" class="form-control" placeholder="Enter message...">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="sendChannel();">Send
+                </button>
             </div>
         </div>
     </div>

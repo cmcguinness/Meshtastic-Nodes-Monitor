@@ -1,14 +1,17 @@
+import uuid
 from datetime import datetime
-from utilities import get_datestamp, format_seconds, calculate_distance
+
+from config import Config
 from mesh import Mesh
 from nodedata import NodeData
 from status import Status
-from config import Config
-import uuid
+from utilities import get_datestamp, format_seconds, calculate_distance
+
 
 # Generate a short UUID by truncating
 def short_uuid():
     return str(uuid.uuid4())[:8]
+
 
 class Message:
     def __init__(self, interface, packet):
@@ -114,20 +117,21 @@ class Message:
         self.add_node_to_ui('-', self.application)
 
     def handle_traceroute(self):
-        route_to =[]
-        route = [int(self.packet['toId'][1:],16)]
+        route_to = []
+        route = [int(self.packet['toId'][1:], 16)]
         if 'route' in self.packet['decoded']['traceroute']:
             for r in self.packet['decoded']['traceroute']['route']:
                 route.append(r)
-        route.append(int(self.packet['fromId'][1:],16))
+        route.append(int(self.packet['fromId'][1:], 16))
 
+        self.hops = -2
         for hop in route:
+            self.hops += 1
             node_id = f'!{int(hop):08x}'
             hop_node = NodeData().lookup_by_id(node_id)
             if hop_node and hop_node.get('user.longName'):
                 node_id = hop_node.get('user.longName')
             route_to.append(node_id)
-
 
         self.add_node_to_ui('TR', f'Routing: {'→'.join(route_to)}')
 
@@ -188,7 +192,8 @@ class Message:
             km = calculate_distance((float(node_lat), float(node_long)), (float(my_lat), float(my_long)))
             distance = f' {int(km)}km'
 
-        self.add_node_to_ui('<img src="static/position.png" width=24>', f'({position.get("latitude", 0):7.4f}, {position.get("longitude", 0):7.4f}, {position.get('altitude', '?')}m) {distance}')
+        self.add_node_to_ui('<img src="static/position.png" width=24>',
+                            f'({position.get("latitude", 0):7.4f}, {position.get("longitude", 0):7.4f}, {position.get('altitude', '?')}m) {distance}')
 
     def flatten_packet(self):
         packet_data = [

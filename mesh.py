@@ -1,9 +1,10 @@
 from meshtastic.tcp_interface import TCPInterface
 from meshtastic.serial_interface import SerialInterface
 from meshtastic.mesh_interface import MeshInterface
-
+from meshtastic import BROADCAST_ADDR
 import sys
 
+from nodedata import NodeData
 
 #   If using TCP/IP
 DEFAULT_DEVICE = '192.168.5.50'
@@ -50,6 +51,7 @@ class Mesh:
                 'index': i,
                 'name': ch[i].settings.name,
                 'psk': ch[i].settings.psk,
+                'psk_bits': 8*len(ch[i].settings.psk),
                 'role': roles[ch[i].role]
             })
 
@@ -73,4 +75,32 @@ class Mesh:
 
     def reset(self):
         self._instance = None
+
+    def send_dm(self, dest, message):
+        from nodedata import NodeData
+
+        if not dest.startswith('!'):
+            dest = '!' + dest
+
+        item_data = NodeData().lookup_by_id(dest)
+
+        if item_data is None:
+            return 'Node not found'
+
+        try:
+            # Send the message
+            r = self.node.sendText(message, dest)
+            return None
+        except Exception as e:
+            return str(e)
+
+    def send_channel(self, dest, message):
+
+        try:
+            # Send the message
+            r = self.node.sendText(message, BROADCAST_ADDR, channelIndex=int(dest))
+            return None
+        except Exception as e:
+            return str(e)
+
 

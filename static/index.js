@@ -107,6 +107,15 @@ function updateTables() {
             summaryHeaders.innerHTML = '';
             summaryValues.innerHTML = '';
 
+            const dropdown_menu = `
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Open in Map</a></li>
+                                            <li><a class="dropdown-item" href="#">Trace Route</a></li>    
+                                            <li><a class="dropdown-item" href="#">DM Sender</a></li>    
+                                        </ul>
+                                        `
+
             // Add new content
             data.summary.columns.forEach(column => {
                 summaryHeaders.innerHTML += `<th>${column}</th>`;
@@ -129,11 +138,7 @@ function updateTables() {
                                         <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                                             ${msg.id}
                                         </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">View Details</a></li>
-                                            <li><a class="dropdown-item" href="#">Open in Map</a></li>
-                                            <li><a class="dropdown-item" href="#">Trace Route</a></li>    
-                                        </ul>
+                                        ${dropdown_menu}
                                     </div>
                                 </td>
                                 <td>${msg.from}</td>
@@ -157,11 +162,8 @@ function updateTables() {
                                         <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                                             ${node.id}
                                         </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">View Details</a></li>
-                                            <li><a class="dropdown-item" href="#">Open in Map</a></li>
-                                            <li><a class="dropdown-item" href="#">Trace Route</a></li>    
-                                        </ul>
+                                         ${dropdown_menu}
+
                                     </div>
                                 </td>
                                 <td>${node.name}</td>
@@ -185,11 +187,7 @@ function updateTables() {
                                         <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
                                             ${packet.id}
                                         </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">View Details</a></li>
-                                            <li><a class="dropdown-item" href="#">Open in Map</a></li>
-                                            <li><a class="dropdown-item" href="#">Trace Route</a></li>    
-                                        </ul>
+                                        ${dropdown_menu}
                                     </div>
                                 </td>
                                 <td>${packet.name}</td>
@@ -256,6 +254,9 @@ function handleAction(rowData) {
         case 'Open in Map':
             openMap(node_id);
             break;
+        case 'DM Sender':
+            showDmModal(node_id);
+            break;
         default:
             console.log('Unknown action:', rowData.action);
     }
@@ -284,17 +285,17 @@ function openMap(rowData) {
 }
 
 // Initialize the modal
-let modal = null;
+let details_modal = null;
 
 function showDetailsModal(id) {
-    if (!modal) {
-        modal = new bootstrap.Modal(document.getElementById('dynamicModal'));
+    if (!details_modal) {
+        details_modal = new bootstrap.Modal(document.getElementById('detailsModal'));
     }
 
-    const modalBody = document.querySelector('#dynamicModal .modal-body');
+    const modalBody = document.querySelector('#detailsModal .modal-body');
     modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 
-    modal.show();
+    details_modal.show();
 
     fetch(`/api/details?id=${encodeURIComponent(id)}`)
         .then(response => {
@@ -308,6 +309,81 @@ function showDetailsModal(id) {
         })
         .catch(error => {
             modalBody.innerHTML = `<div class="alert alert-danger">Error loading content: ${error.message}</div>`;
+        });
+}
+
+
+// Initialize the modal
+let dm_modal = null;
+
+function showDmModal(id) {
+    if (!dm_modal) {
+        dm_modal = new bootstrap.Modal(document.getElementById('dmModal'));
+    }
+
+    idfield = document.getElementById('dmId');
+    idfield.innerText = id;
+
+    const modalBody = document.querySelector('#dmModal .modal-body');
+
+    dm_modal.show();
+
+}
+
+function sendDM() {
+    const id = document.getElementById('dmId').innerText;
+    const message = document.getElementById('dm-message').value;
+    document.getElementById('dm-message').value = '';
+
+    fetch(`/api/dm?id=${encodeURIComponent(id)}&message=${encodeURIComponent(message)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(msg => {
+            showToast(msg);
+            dm_modal.hide();
+        })
+        .catch(error => {
+            showToast(`Error: ${error.message}`);
+        });
+}
+
+
+// Initialize the modal
+let channel_modal = null;
+
+function showChannelModal(id, name) {
+    if (!channel_modal) {
+        channel_modal = new bootstrap.Modal(document.getElementById('channelModal'));
+    }
+
+    document.getElementById('channelName').innerText = name;;
+    document.getElementById('channelId').innerText = id;
+
+    channel_modal.show();
+
+}
+
+function sendChannel() {
+    const id = document.getElementById('channelId').innerText;
+    const message = document.getElementById('channelMessage').value;
+    document.getElementById('channelMessage').value = '';
+    fetch(`/api/sendchannel?id=${encodeURIComponent(id)}&message=${encodeURIComponent(message)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(msg => {
+            showToast(msg);
+            channel_modal.hide();
+        })
+        .catch(error => {
+            showToast(`Error: ${error.message}`);
         });
 }
 

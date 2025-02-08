@@ -27,7 +27,8 @@ def index():
     voltage = m.node_data['deviceMetrics']['voltage']
     batt_level = m.node_data['deviceMetrics']['batteryLevel']
     firmware_version = m.node.metadata.firmware_version
-    return render_template('index.html', name=m.full_name, voltage=voltage, batt_level=batt_level, version=firmware_version)
+    return render_template('index.html', name=m.full_name, voltage=voltage, batt_level=batt_level, version=firmware_version,
+                           channels=m.channels)
 
 
 @app.route('/api/updates')
@@ -114,6 +115,43 @@ def get_details():
         abort(500, description=f"Error fetching details: {str(e)}")
 
 
+@app.route('/api/dm', methods=['GET'])
+def send_dm():
+    # Get the ID from the request arguments
+    item_id = request.args.get('id')
+    if not item_id:
+        abort(400, description="Missing required 'id' parameter")
+
+    # Get the message from the request arguments
+    message = request.args.get('message')
+    if not message:
+        abort(400, description="Missing required 'message' parameter")
+
+    err = Mesh().send_dm(item_id, message)
+
+    if err is None:
+        return 'Message sent'
+
+    return err
+
+@app.route('/api/sendchannel', methods=['GET'])
+def send_channel():
+    # Get the ID from the request arguments
+    item_id = request.args.get('id')
+    if not item_id:
+        abort(400, description="Missing required 'id' parameter")
+
+    # Get the message from the request arguments
+    message = request.args.get('message')
+    if not message:
+        abort(400, description="Missing required 'message' parameter")
+
+    err = Mesh().send_channel(item_id, message)
+
+    if err is None:
+        return 'Message sent'
+
+    return err
 
 #    ┌──────────────────────────────────────────────────────────┐
 #    │                       Startup Code                       │

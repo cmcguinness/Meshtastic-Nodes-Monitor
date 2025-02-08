@@ -1,4 +1,3 @@
-from mesh import Mesh
 from utilities import *
 
 
@@ -17,7 +16,7 @@ class NodeData:
         self.refresh_frequency = 300  # 5 minutes
 
     def refresh_data(self):
-
+        from mesh import Mesh
         self.lasttime = time.time()
         self.raw_data = Mesh().node.nodes
         self.flatten_data()
@@ -117,3 +116,6 @@ class NodeData:
                 n['lastHeard'] = 'Unknown'
 
         return nodes
+
+
+__all__ = ['NodeData']
