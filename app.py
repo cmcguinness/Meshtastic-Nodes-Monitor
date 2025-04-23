@@ -61,7 +61,7 @@ def get_updates():
 def send_trace_route_in_thread(dest, hopLimit, channelIndex):
     global flash_message
     try:
-        # print('Sending traceroute...', flush=True)
+        print(f'Sending traceroute ({dest} {hopLimit} {channelIndex}) ({type(dest)})', flush=True)
         Mesh().node.sendTraceRoute(dest, hopLimit, channelIndex=channelIndex)
     except Exception as e:
         l = logging.getLogger(__name__)

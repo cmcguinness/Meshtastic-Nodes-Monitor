@@ -1,5 +1,6 @@
 from utilities import *
-
+from threading import Lock
+_lock = Lock()
 
 class NodeData:
     _instance = None
@@ -10,10 +11,11 @@ class NodeData:
         return cls._instance
 
     def __init__(self):
-        self.raw_data = None
-        self.data = None
-        self.lasttime = None
-        self.refresh_frequency = 300  # 5 minutes
+        if NodeData._instance is None:
+            self.raw_data = None
+            self.data = None
+            self.lasttime = None
+            self.refresh_frequency = 300  # 5 minutes
 
     def refresh_data(self):
         from mesh import Mesh
@@ -23,28 +25,27 @@ class NodeData:
 
     def flatten_data(self):
         keys = []
-        for node_id, node in self.raw_data.items():
-            for key in node.keys():
-                if key not in keys:
-                    if isinstance(node[key], dict):
-                        for subkey in node[key].keys():
-                            keys.append(f"{key}.{subkey}")
-                    else:
-                        keys.append(key)
+        with _lock:
+            for node_id, node in self.raw_data.items():
+                for key in node.keys():
+                    if key not in keys:
+                        if isinstance(node[key], dict):
+                            for subkey in node[key].keys():
+                                keys.append(f"{key}.{subkey}")
+                        else:
+                            keys.append(key)
 
-        self.data = []
-        # This is because another thread could come along and add items and
-        # cause us to error out
-        rd = self.raw_data.copy()
-        for node_id, node in rd.items():
-            node_data = {'id': node_id}
-            for key in keys:
-                if '.' in key:
-                    subkey = key.split('.')
-                    node_data[key] = node.get(subkey[0], {}).get(subkey[1], None)
-                else:
-                    node_data[key] = node.get(key, None)
-            self.data.append(node_data)
+            self.data = []
+            rd = self.raw_data.copy()
+            for node_id, node in rd.items():
+                node_data = {'id': node_id}
+                for key in keys:
+                    if '.' in key:
+                        subkey = key.split('.')
+                        node_data[key] = node.get(subkey[0], {}).get(subkey[1], None)
+                    else:
+                        node_data[key] = node.get(key, None)
+                self.data.append(node_data)
 
     def lookup_by_id(self, node_id):
         try:

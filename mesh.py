@@ -3,6 +3,7 @@ from meshtastic.serial_interface import SerialInterface
 from meshtastic.mesh_interface import MeshInterface
 from meshtastic import BROADCAST_ADDR
 import sys
+import os
 
 from nodedata import NodeData
 
@@ -26,6 +27,8 @@ class Mesh:
             return
         if len(sys.argv) > 1:
             self.device = sys.argv[1]
+        elif os.getenv('DEVICE_ADDRESS'):
+            self.device = os.getenv('DEVICE_ADDRESS')
         else:
             self.device = DEFAULT_DEVICE
 
