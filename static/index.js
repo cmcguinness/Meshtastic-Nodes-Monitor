@@ -2,16 +2,6 @@
 //     pause_update = Boolean(yesno);
 // }
 
-// Escape HTML to prevent XSS attacks
-function escapeHtml(text) {
-    if (text === null || text === undefined) {
-        return '';
-    }
-    const div = document.createElement('div');
-    div.textContent = String(text);
-    return div.innerHTML;
-}
-
 function showToast(message) {
     const toastContainer = document.querySelector('.toast-container');
 
@@ -22,7 +12,7 @@ function showToast(message) {
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
                 <div class="toast-body">
-                    ${escapeHtml(message)}
+                    ${message}
                 </div>
             </div>
         `;
@@ -128,10 +118,10 @@ function updateTables() {
 
             // Add new content
             data.summary.columns.forEach(column => {
-                summaryHeaders.innerHTML += `<th>${escapeHtml(column)}</th>`;
+                summaryHeaders.innerHTML += `<th>${column}</th>`;
             });
             data.summary.values.forEach(value => {
-                summaryValues.innerHTML += `<td>${escapeHtml(value)}</td>`;
+                summaryValues.innerHTML += `<td>${value}</td>`;
             });
 
             // Update messages table
@@ -142,19 +132,19 @@ function updateTables() {
                 if (doEncrypted || msg.message !== '*** ENCRYPTED TEXT ***') {
                     messagesBody.innerHTML += `
                             <tr>
-                                <td>${escapeHtml(msg.datetime)}</td>
+                                <td>${msg.datetime}</td>
                                 <td>
                                     <div class="dropdown">
                                         <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
-                                            ${escapeHtml(msg.id)}
+                                            ${msg.id}
                                         </a>
                                         ${dropdown_menu}
                                     </div>
                                 </td>
-                                <td>${escapeHtml(msg.from)}</td>
-                                <td>${escapeHtml(msg.to)}</td>
-                                <td>${escapeHtml(msg.channel)}</td>
-                                <td>${escapeHtml(msg.message)}</td>
+                                <td>${msg.from}</td>
+                                <td>${msg.to}</td>
+                                <td>${msg.channel}</td>
+                                <td>${msg.message}</td>
                             </tr>
                         `;
                 }
@@ -166,20 +156,20 @@ function updateTables() {
             data.nodes.forEach(node => {
                 nodesBody.innerHTML += `
                             <tr>
-                                <td>${escapeHtml(node.lastHeard)}</td>
+                                <td>${node.lastHeard}</td>
                                 <td>
                                     <div class="dropdown">
                                         <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
-                                            ${escapeHtml(node.id)}
+                                            ${node.id}
                                         </a>
                                          ${dropdown_menu}
 
                                     </div>
                                 </td>
-                                <td>${escapeHtml(node.name)}</td>
-                                <td>${escapeHtml(node.hwModel)}</td>
-                                <td>${escapeHtml(node.hopsAway)}</td>
-                                <td>${escapeHtml(node.distance)}</td>
+                                <td>${node.name}</td>
+                                <td>${node.hwModel}</td>
+                                <td>${node.hopsAway}</td>
+                                <td>${node.distance}</td>
                             </tr>
                         `;
             });
@@ -191,20 +181,20 @@ function updateTables() {
             data.packets.forEach(packet => {
                 packetsBody.innerHTML += `
                             <tr>
-                                <td>${escapeHtml(packet.datetime)}</td>
+                                <td>${packet.datetime}</td>
                                 <td>
                                     <div class="dropdown">
                                         <a  class="dropdown-toggle text-decoration-none" href="#" role="button" data-bs-toggle="dropdown">
-                                            ${escapeHtml(packet.id)}
+                                            ${packet.id}
                                         </a>
                                         ${dropdown_menu}
                                     </div>
                                 </td>
-                                <td>${escapeHtml(packet.name)}</td>
-                                <td>${escapeHtml(packet.hops)}</td>
-                                <td>${escapeHtml(packet.rssi)}</td>
-                                <td>${escapeHtml(packet.type)}</td>
-                                <td>${escapeHtml(packet.information)}</td>
+                                <td>${packet.name}</td>
+                                <td>${packet.hops}</td>
+                                <td>${packet.rssi}</td>
+                                <td>${packet.type}</td>
+                                <td>${packet.information}</td>
                             </tr>
                         `;
                 reFilterPackets();
