@@ -1,0 +1,145 @@
+<h3>{{ data.longName }} [{{ data.shortName }}]</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <h5>Identity</h5>
+        <table class="table table-sm">
+            <tr>
+                <td>Node ID</td>
+                <td>
+                    <code>{{ data.nodeId }}</code>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyNodeId('{{ data.nodeId }}')" title="Copy to clipboard">Copy</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Hardware</td>
+                <td>{{ data.hwModel }}</td>
+            </tr>
+            <tr>
+                <td>Role</td>
+                <td>{{ data.role }}</td>
+            </tr>
+            <tr>
+                <td>Firmware</td>
+                <td>{{ data.firmwareVersion }}</td>
+            </tr>
+        </table>
+
+        <h5>Connection</h5>
+        <table class="table table-sm">
+            <tr>
+                <td>Type</td>
+                <td>{{ data.connectionType }}</td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td><code>{{ data.connectionAddress }}</code></td>
+            </tr>
+            <tr>
+                <td>Known Nodes</td>
+                <td>{{ data.nodeCount }}</td>
+            </tr>
+            <tr>
+                <td>Channels</td>
+                <td>{{ data.channelCount }}</td>
+            </tr>
+        </table>
+
+        <h5>Capabilities</h5>
+        <table class="table table-sm">
+            <tr>
+                <td>WiFi</td>
+                <td>{% if data.hasWifi %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <td>Bluetooth</td>
+                <td>{% if data.hasBluetooth %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <td>Ethernet</td>
+                <td>{% if data.hasEthernet %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <td>Can Shutdown</td>
+                <td>{% if data.canShutdown %}Yes{% else %}No{% endif %}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-6">
+        <h5>Power</h5>
+        <table class="table table-sm">
+            <tr>
+                <td>Battery Level</td>
+                <td>{{ data.batteryLevel }}%</td>
+            </tr>
+            <tr>
+                <td>Voltage</td>
+                <td>{{ data.voltage }}V</td>
+            </tr>
+            <tr>
+                <td>Uptime</td>
+                <td id="localnode-uptime">{{ data.uptimeSeconds }}</td>
+            </tr>
+        </table>
+
+        <h5>Radio</h5>
+        <table class="table table-sm">
+            <tr>
+                <td>Channel Utilization</td>
+                <td>{% if data.channelUtilization != 'N/A' %}{{ "%.1f"|format(data.channelUtilization) }}%{% else %}N/A{% endif %}</td>
+            </tr>
+            <tr>
+                <td>TX Air Utilization</td>
+                <td>{% if data.airUtilTx != 'N/A' %}{{ "%.1f"|format(data.airUtilTx) }}%{% else %}N/A{% endif %}</td>
+            </tr>
+        </table>
+
+        <h5>Position</h5>
+        <table class="table table-sm">
+            {% if data.latitude and data.longitude %}
+            <tr>
+                <td>Coordinates</td>
+                <td>
+                    {{ data.latitude }}, {{ data.longitude }}<br>
+                    <small>
+                        <a href="https://www.google.com/maps?q={{ data.latitude }},{{ data.longitude }}" target="_blank">Google Maps</a>
+                        &nbsp;|&nbsp;
+                        <a href="https://www.openstreetmap.org/?mlat={{ data.latitude }}&mlon={{ data.longitude }}&zoom=15" target="_blank">OpenStreetMap</a>
+                    </small>
+                </td>
+            </tr>
+            <tr>
+                <td>Altitude</td>
+                <td>{% if data.altitude %}{{ data.altitude }} meters{% else %}Unknown{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="2"><em>Position not available</em></td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+<script>
+    // Format uptime
+    (function() {
+        const uptimeEl = document.getElementById('localnode-uptime');
+        const seconds = parseInt(uptimeEl.textContent);
+        if (!isNaN(seconds) && seconds > 0) {
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            let result = '';
+            if (days > 0) result += days + 'd ';
+            if (hours > 0 || days > 0) result += hours + 'h ';
+            if (mins > 0 || hours > 0 || days > 0) result += mins + 'm ';
+            result += secs + 's';
+            uptimeEl.textContent = result;
+        } else {
+            uptimeEl.textContent = 'Unknown';
+        }
+    })();
+</script>

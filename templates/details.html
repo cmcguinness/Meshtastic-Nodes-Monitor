@@ -1,6 +1,19 @@
 <h3>{{ data['user.longName'] }} [{{ data['user.shortName'] }}]</h3>
 <table class="table">
     <tr>
+        <td>Node ID</td>
+        <td>
+            <code>{{ data['id'] }}</code>
+            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyNodeId('{{ data['id'] }}')" title="Copy to clipboard">
+                Copy
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <td>Last Heard</td>
+        <td>{{ data['formatted_lastHeard'] }}</td>
+    </tr>
+    <tr>
         <td>Hardware</td>
         <td>{{ data['user.hwModel'] }}</td>
     </tr>
@@ -17,31 +30,46 @@
         <td>{{ data['user.role'] }}</td>
     </tr>
     <tr>
+        <td>Position</td>
         <td>
-            Latitude
+            {% if data['position.latitude'] and data['position.longitude'] %}
+                {{ data['position.latitude'] }}, {{ data['position.longitude'] }}<br>
+                <small>
+                    <a href="https://www.google.com/maps?q={{ data['position.latitude'] }},{{ data['position.longitude'] }}" target="_blank">Google Maps</a>
+                    &nbsp;|&nbsp;
+                    <a href="https://www.openstreetmap.org/?mlat={{ data['position.latitude'] }}&mlon={{ data['position.longitude'] }}&zoom=15" target="_blank">OpenStreetMap</a>
+                </small>
+            {% else %}
+                Unknown
+            {% endif %}
         </td>
-        <td>{{ data['position.latitude'] }}</td>
-    </tr>
-    <tr>
-        <td>
-            Longitude
-        </td>
-        <td>{{ data['position.longitude'] }}</td>
     </tr>
     <tr>
         <td>Altitude</td>
-        <td>{{ data['position.altitude'] }} meters</td>
+        <td>{% if data['position.altitude'] %}{{ data['position.altitude'] }} meters{% else %}Unknown{% endif %}</td>
     </tr>
     <tr>
         <td>Distance</td>
-        <td>{{data['distance']}} km</td>
+        <td>{% if data['distance'] >= 0 %}{{ data['distance'] }} km{% else %}Unknown{% endif %}</td>
     </tr>
     <tr>
         <td>Uptime</td>
-        <td>{{ data['formatted_uptime'] }}</td>
+        <td>{{ data['formatted_uptime'] or 'Unknown' }}</td>
     </tr>
     <tr>
         <td>Hops Away</td>
-        <td>{{ data['hopsAway'] }}</td>
+        <td>{{ data['hopsAway'] if data['hopsAway'] is not none else 'Unknown' }}</td>
     </tr>
 </table>
+
+<div class="d-flex gap-2 mt-3">
+    <button class="btn btn-primary" onclick="openMap('{{ data['id'][1:] }}'); details_modal.hide();">
+        Open in Map
+    </button>
+    <button class="btn btn-success" onclick="details_modal.hide(); showDmModal('{{ data['id'][1:] }}');">
+        Send DM
+    </button>
+    <button class="btn btn-warning" onclick="traceRoute('{{ data['id'][1:] }}'); details_modal.hide();">
+        Trace Route
+    </button>
+</div>

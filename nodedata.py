@@ -66,7 +66,10 @@ class NodeData:
                         node['formatted_uptime'] = format_seconds(node.get('deviceMetrics.uptimeSeconds'))
                     else:
                         node['formatted_uptime'] = ''
-                    # print(str(node).replace('\n', ' '))  # Debugging code
+                    if node.get('lastHeard'):
+                        node['formatted_lastHeard'] = datetime.fromtimestamp(node.get('lastHeard')).strftime("%Y-%m-%d %H:%M:%S")
+                    else:
+                        node['formatted_lastHeard'] = 'Unknown'
                     return node
 
             # print(f'{node_id} not found.')  # Debugging code

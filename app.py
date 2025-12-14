@@ -157,6 +157,60 @@ def send_channel():
 
     return err
 
+
+@app.route('/api/localnode')
+def get_local_node_info():
+    """Return detailed information about the local node"""
+    m = Mesh()
+
+    # Basic node data
+    node_data = m.node_data
+    user = node_data.get('user', {})
+    device_metrics = node_data.get('deviceMetrics', {})
+    position = node_data.get('position', {})
+
+    # Metadata from device
+    metadata = m.node.metadata
+
+    # Connection info
+    connection_type = 'Serial' if m.device.startswith('/') else 'TCP/IP'
+
+    # Node count
+    node_count = len(m.node.nodes)
+
+    # Channel count
+    channel_count = len(m.channels)
+
+    info = {
+        'nodeId': m.nodenum,
+        'longName': user.get('longName', 'Unknown'),
+        'shortName': user.get('shortName', 'Unknown'),
+        'hwModel': user.get('hwModel', 'Unknown'),
+        'role': user.get('role', 'Unknown'),
+        'connectionType': connection_type,
+        'connectionAddress': m.device,
+        'firmwareVersion': metadata.firmware_version if metadata else 'Unknown',
+        'deviceStateVersion': metadata.device_state_version if metadata else 'Unknown',
+        'canShutdown': metadata.canShutdown if metadata else False,
+        'hasWifi': metadata.hasWifi if metadata else False,
+        'hasBluetooth': metadata.hasBluetooth if metadata else False,
+        'hasEthernet': metadata.hasEthernet if metadata else False,
+        'batteryLevel': device_metrics.get('batteryLevel', 'N/A'),
+        'voltage': device_metrics.get('voltage', 'N/A'),
+        'channelUtilization': device_metrics.get('channelUtilization', 'N/A'),
+        'airUtilTx': device_metrics.get('airUtilTx', 'N/A'),
+        'uptimeSeconds': device_metrics.get('uptimeSeconds', 0),
+        'latitude': position.get('latitude'),
+        'longitude': position.get('longitude'),
+        'altitude': position.get('altitude'),
+        'nodeCount': node_count,
+        'channelCount': channel_count,
+        'channels': m.channels
+    }
+
+    return render_template('localnode.html', data=info)
+
+
 #    ┌──────────────────────────────────────────────────────────┐
 #    │                       Startup Code                       │
 #    └──────────────────────────────────────────────────────────┘

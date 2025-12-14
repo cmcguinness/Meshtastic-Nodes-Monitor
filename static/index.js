@@ -284,6 +284,42 @@ function openMap(rowData) {
     window.open('https://meshtastic.liamcottle.net/?node_id=' + String(nodeNum), "_blank");
 }
 
+function copyNodeId(nodeId) {
+    navigator.clipboard.writeText(nodeId).then(() => {
+        showToast('Node ID copied to clipboard');
+    }).catch(err => {
+        showToast('Failed to copy: ' + err);
+    });
+}
+
+// Initialize the local node modal
+let local_node_modal = null;
+
+function showLocalNodeInfo() {
+    if (!local_node_modal) {
+        local_node_modal = new bootstrap.Modal(document.getElementById('localNodeModal'));
+    }
+
+    const modalBody = document.querySelector('#localNodeModal .modal-body');
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+    local_node_modal.show();
+
+    fetch('/api/localnode')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            modalBody.innerHTML = html;
+        })
+        .catch(error => {
+            modalBody.innerHTML = `<div class="alert alert-danger">Error loading content: ${error.message}</div>`;
+        });
+}
+
 // Initialize the modal
 let details_modal = null;
 
