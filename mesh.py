@@ -77,7 +77,7 @@ class Mesh:
         self.node = TCPInterface(hostname=self.device)
 
     def reset(self):
-        self._instance = None
+        Mesh._instance = None
 
     def send_dm(self, dest, message):
         from nodedata import NodeData

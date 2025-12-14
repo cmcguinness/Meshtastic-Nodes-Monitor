@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from config import Config
 import pickle
 import os
+import time
 
 class MSG(BaseModel):
     msg_time: str
@@ -100,6 +101,8 @@ class Status:
             self.counts = None
             self.messages = None
             self.packets = None
+            self.last_persist_time = 0
+            self.persist_interval = 10  # seconds between disk writes
             if self.config.get('data.persist_data'):
                 if os.path.exists('persisted_data.pkl'):
                     with open('persisted_data.pkl', 'rb') as f:
@@ -118,11 +121,16 @@ class Status:
 
         self.initialized = True
 
-    def persist(self):
-        if self.config.get('data.persist_data'):
-            data = { 'counts': self.counts, 'messages': self.messages, 'packets': self.packets}
-            with open('persisted_data.pkl', 'wb') as f:
-                pickle.dump(data, f)
+    def persist(self, force=False):
+        if not self.config.get('data.persist_data'):
+            return
+        now = time.time()
+        if not force and (now - self.last_persist_time) < self.persist_interval:
+            return  # Skip, too soon since last persist
+        self.last_persist_time = now
+        data = { 'counts': self.counts, 'messages': self.messages, 'packets': self.packets}
+        with open('persisted_data.pkl', 'wb') as f:
+            pickle.dump(data, f)
 
     def get_counts(self):
         r = {'columns': [key for key in self.counts], 'values': [self.counts[key] for key in self.counts]}

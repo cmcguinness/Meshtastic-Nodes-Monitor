@@ -20,13 +20,15 @@ app = Flask(__name__)
 status = Status()
 
 flash_message = None
+flash_message_lock = threading.Lock()
 
 @app.route('/')
 def index():
     m = Mesh()
-    voltage = m.node_data['deviceMetrics']['voltage']
-    batt_level = m.node_data['deviceMetrics']['batteryLevel']
-    firmware_version = m.node.metadata.firmware_version
+    device_metrics = m.node_data.get('deviceMetrics', {})
+    voltage = device_metrics.get('voltage', 'N/A')
+    batt_level = device_metrics.get('batteryLevel', 'N/A')
+    firmware_version = m.node.metadata.firmware_version if m.node.metadata else 'Unknown'
     return render_template('index.html', name=m.full_name, voltage=voltage, batt_level=batt_level, version=firmware_version,
                            channels=m.channels)
 
@@ -45,8 +47,9 @@ def get_updates():
     nodes_data = NodeData().get_nodes()[:rowmax]
 
     global flash_message
-    f = flash_message
-    flash_message = None
+    with flash_message_lock:
+        f = flash_message
+        flash_message = None
     return jsonify({
         "summary": summary_data,
         "messages": messages_data,
@@ -66,7 +69,8 @@ def send_trace_route_in_thread(dest, hopLimit, channelIndex):
     except Exception as e:
         l = logging.getLogger(__name__)
         l.info(f'TraceRoute EXCEPTION: {e}')
-        flash_message = 'Trace Route Failed'
+        with flash_message_lock:
+            flash_message = 'Trace Route Failed'
 
     # print('Traceroute finished', flush=True)
 

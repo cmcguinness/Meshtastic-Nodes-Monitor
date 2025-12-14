@@ -40,8 +40,14 @@ class Listener():
         print("Listener is being destroyed")
 
     def on_receive(self, packet: dict, interface):
-        msg = Message(interface, packet)
-        msg.handle_message()
+        try:
+            msg = Message(interface, packet)
+            msg.handle_message()
+        except Exception as e:
+            print(f'Error processing packet: {e}', flush=True)
+            with open('packetlog.txt', 'a') as f:
+                f.write(f'{get_datestamp()}: ERROR processing packet: {e}\n')
+                f.write(f'{get_datestamp()}: Packet was: {packet}\n')
 
     def on_disconnect(self):
         print('Disconnected from Mesh')

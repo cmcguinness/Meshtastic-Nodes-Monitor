@@ -1,5 +1,7 @@
-from utilities import *
+import time
+from datetime import datetime
 from threading import Lock
+from utilities import calculate_distance, format_seconds
 _lock = Lock()
 
 class NodeData:
@@ -8,17 +10,24 @@ class NodeData:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(NodeData, cls).__new__(cls)
+            cls._instance._initialized = False
         return cls._instance
 
     def __init__(self):
-        if NodeData._instance is None:
-            self.raw_data = None
-            self.data = None
-            self.lasttime = None
-            self.refresh_frequency = 300  # 5 minutes
+        if self._initialized:
+            return
+        self.raw_data = None
+        self.data = None
+        self.lasttime = None
+        self.refresh_frequency = 300  # 5 minutes
+        self._initialized = True
 
-    def refresh_data(self):
+    def refresh_data(self, force=False):
         from mesh import Mesh
+        # Only refresh if cache expired or forced
+        if not force and self.lasttime is not None:
+            if time.time() - self.lasttime < self.refresh_frequency:
+                return  # Use cached data
         self.lasttime = time.time()
         self.raw_data = Mesh().node.nodes
         self.flatten_data()
@@ -68,15 +77,14 @@ class NodeData:
 
     def get_nodes(self):
         self.refresh_data()
-        self.flatten_data()
         nodes = []
         mapping = [
             ('id', 'id'),
             ('hopsAway', 'hopsAway'),
             ('publicKey', 'publicKey'),
-            ('latittude', 'posistion.latittude'),
-            ('longitude', 'posistion.longitude'),
-            ('altitude', 'posistion.altitude'),
+            ('latitude', 'position.latitude'),
+            ('longitude', 'position.longitude'),
+            ('altitude', 'position.altitude'),
             ('hwModel', 'user.hwModel')
         ]
 
