@@ -1,4 +1,9 @@
-<h3>{{ data['user.longName'] }} [{{ data['user.shortName'] }}]</h3>
+<h3>
+    {{ data['user.longName'] }} [{{ data['user.shortName'] }}]
+    {% if data['hopsAway'] is none %}
+        <span class="badge bg-success ms-2">Connected Device</span>
+    {% endif %}
+</h3>
 <table class="table">
     <tr>
         <td>Node ID</td>
@@ -58,7 +63,7 @@
     </tr>
     <tr>
         <td>Hops Away</td>
-        <td>{{ data['hopsAway'] if data['hopsAway'] is not none else 'Unknown' }}</td>
+        <td>{% if data['hopsAway'] is not none %}{{ data['hopsAway'] }}{% else %}<em>Local (directly connected)</em>{% endif %}</td>
     </tr>
 </table>
 

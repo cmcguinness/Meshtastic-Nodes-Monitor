@@ -1,0 +1,752 @@
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left sidebar with tabs -->
+        <div class="col-md-3">
+            <div class="nav flex-column nav-pills" id="config-tabs" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active" id="device-tab" data-bs-toggle="pill" data-bs-target="#device-config" type="button" role="tab">Device</button>
+                <button class="nav-link" id="lora-tab" data-bs-toggle="pill" data-bs-target="#lora-config" type="button" role="tab">LoRa</button>
+                <button class="nav-link" id="channels-tab" data-bs-toggle="pill" data-bs-target="#channels-config" type="button" role="tab">Channels</button>
+                <button class="nav-link" id="position-tab" data-bs-toggle="pill" data-bs-target="#position-config" type="button" role="tab">Position</button>
+                <button class="nav-link" id="display-tab" data-bs-toggle="pill" data-bs-target="#display-config" type="button" role="tab">Display</button>
+                <button class="nav-link" id="power-tab" data-bs-toggle="pill" data-bs-target="#power-config" type="button" role="tab">Power</button>
+                <button class="nav-link" id="network-tab" data-bs-toggle="pill" data-bs-target="#network-config" type="button" role="tab">Network</button>
+                <button class="nav-link" id="bluetooth-tab" data-bs-toggle="pill" data-bs-target="#bluetooth-config" type="button" role="tab">Bluetooth</button>
+                <button class="nav-link" id="security-tab" data-bs-toggle="pill" data-bs-target="#security-config" type="button" role="tab">Security</button>
+                <button class="nav-link" id="mqtt-tab" data-bs-toggle="pill" data-bs-target="#mqtt-config" type="button" role="tab">MQTT</button>
+                <button class="nav-link" id="telemetry-tab" data-bs-toggle="pill" data-bs-target="#telemetry-config" type="button" role="tab">Telemetry</button>
+                <button class="nav-link" id="serial-tab" data-bs-toggle="pill" data-bs-target="#serial-config" type="button" role="tab">Serial</button>
+                <button class="nav-link" id="store-forward-tab" data-bs-toggle="pill" data-bs-target="#store-forward-config" type="button" role="tab">Store & Forward</button>
+                <button class="nav-link" id="external-notification-tab" data-bs-toggle="pill" data-bs-target="#external-notification-config" type="button" role="tab">Ext. Notification</button>
+                <button class="nav-link" id="other-modules-tab" data-bs-toggle="pill" data-bs-target="#other-modules-config" type="button" role="tab">Other Modules</button>
+            </div>
+        </div>
+
+        <!-- Right side with tab content -->
+        <div class="col-md-9">
+            <div class="tab-content" id="config-tab-content">
+
+                <!-- Device Config -->
+                <div class="tab-pane fade show active" id="device-config" role="tabpanel">
+                    <h4>Device Configuration</h4>
+                    <form id="device-form" data-section="device">
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" name="role">
+                                {% if config.device.success %}
+                                    {% for option in config.device.config.role_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rebroadcast Mode</label>
+                            <select class="form-select" name="rebroadcast_mode">
+                                {% if config.device.success %}
+                                    {% for option in config.device.config.rebroadcast_mode_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Node Info Broadcast Interval (seconds)</label>
+                            <input type="number" class="form-control" name="node_info_broadcast_secs" value="{{ config.device.config.node_info_broadcast_secs if config.device.success else 900 }}" min="0" max="86400">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="double_tap_as_button_press" {% if config.device.success and config.device.config.double_tap_as_button_press %}checked{% endif %}>
+                            <label class="form-check-label">Double Tap as Button Press</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="disable_triple_click" {% if config.device.success and config.device.config.disable_triple_click %}checked{% endif %}>
+                            <label class="form-check-label">Disable Triple Click</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="led_heartbeat_disabled" {% if config.device.success and config.device.config.led_heartbeat_disabled %}checked{% endif %}>
+                            <label class="form-check-label">Disable LED Heartbeat</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Timezone (TZ format, e.g., EST5EDT)</label>
+                            <input type="text" class="form-control" name="tzdef" value="{{ config.device.config.tzdef if config.device.success else '' }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- LoRa Config -->
+                <div class="tab-pane fade" id="lora-config" role="tabpanel">
+                    <h4>LoRa Configuration</h4>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Warning:</strong> Changing region or frequency settings can disconnect your device or violate local regulations.
+                    </div>
+                    <form id="lora-form" data-section="lora">
+                        <div class="mb-3">
+                            <label class="form-label">Region</label>
+                            <select class="form-select" name="region">
+                                {% if config.lora.success %}
+                                    {% for option in config.lora.config.region_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Modem Preset</label>
+                            <select class="form-select" name="modem_preset">
+                                {% if config.lora.success %}
+                                    {% for option in config.lora.config.modem_preset_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="use_preset" {% if config.lora.success and config.lora.config.use_preset %}checked{% endif %}>
+                            <label class="form-check-label">Use Modem Preset</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="tx_enabled" {% if config.lora.success and config.lora.config.tx_enabled %}checked{% endif %}>
+                            <label class="form-check-label">TX Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">TX Power (dBm)</label>
+                            <input type="number" class="form-control" name="tx_power" value="{{ config.lora.config.tx_power if config.lora.success else 0 }}" min="0" max="30">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hop Limit</label>
+                            <input type="number" class="form-control" name="hop_limit" value="{{ config.lora.config.hop_limit if config.lora.success else 3 }}" min="1" max="7">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="override_duty_cycle" {% if config.lora.success and config.lora.config.override_duty_cycle %}checked{% endif %}>
+                            <label class="form-check-label">Override Duty Cycle</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Channels Config -->
+                <div class="tab-pane fade" id="channels-config" role="tabpanel">
+                    <h4>Channel Configuration</h4>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Note:</strong> Changes to channels will take effect immediately. The Primary channel (Channel 0) cannot be disabled.
+                    </div>
+
+                    {% if config.channels.success %}
+                        {% for channel in config.channels.channels %}
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <strong>Channel {{ channel.index }}</strong>
+                                {% if channel.role_name == 'PRIMARY' %}
+                                    <span class="badge bg-primary">{{ channel.role_name }}</span>
+                                {% elif channel.role_name == 'SECONDARY' %}
+                                    <span class="badge bg-secondary">{{ channel.role_name }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ channel.role_name }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <form class="channel-form" data-section="channel" data-channel-index="{{ channel.index }}">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Channel Name</label>
+                                                <input type="text" class="form-control" name="name" value="{{ channel.name }}" placeholder="Channel {{ channel.index }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Role</label>
+                                                <select class="form-select" name="role" {% if channel.index == 0 %}disabled{% endif %}>
+                                                    {% for option in channel.role_options %}
+                                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% if channel.index == 0 %}
+                                                    <small class="form-text text-muted">Primary channel cannot be changed</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Pre-Shared Key (PSK) - Hex Format</label>
+                                        <input type="text" class="form-control font-monospace" name="psk" value="{{ channel.psk }}" placeholder="Enter hex PSK (e.g., 01 for default, or 32 hex chars for AES256)">
+                                        <small class="form-text text-muted">
+                                            Current: {{ channel.psk_bits }} bits
+                                            {% if channel.psk_bits == 0 %}(No encryption)
+                                            {% elif channel.psk_bits == 8 %}(Default - 1 byte)
+                                            {% elif channel.psk_bits == 128 %}(AES-128)
+                                            {% elif channel.psk_bits == 256 %}(AES-256)
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3 form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="uplink_enabled" {% if channel.uplink_enabled %}checked{% endif %}>
+                                                <label class="form-check-label">Uplink Enabled</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3 form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="downlink_enabled" {% if channel.downlink_enabled %}checked{% endif %}>
+                                                <label class="form-check-label">Downlink Enabled</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Channel {{ channel.index }}</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-danger">
+                            Error loading channels: {{ config.channels.error }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Position Config -->
+                <div class="tab-pane fade" id="position-config" role="tabpanel">
+                    <h4>Position Configuration</h4>
+                    <form id="position-form" data-section="position">
+                        <div class="mb-3">
+                            <label class="form-label">GPS Mode</label>
+                            <select class="form-select" name="gps_mode">
+                                {% if config.position.success %}
+                                    {% for option in config.position.config.gps_mode_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="gps_enabled" {% if config.position.success and config.position.config.gps_enabled %}checked{% endif %}>
+                            <label class="form-check-label">GPS Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Position Broadcast Interval (seconds)</label>
+                            <input type="number" class="form-control" name="position_broadcast_secs" value="{{ config.position.config.position_broadcast_secs if config.position.success else 900 }}" min="0" max="86400">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="position_broadcast_smart_enabled" {% if config.position.success and config.position.config.position_broadcast_smart_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Smart Position Broadcast</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Smart Broadcast Minimum Distance (meters)</label>
+                            <input type="number" class="form-control" name="broadcast_smart_minimum_distance" value="{{ config.position.config.broadcast_smart_minimum_distance if config.position.success else 100 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Smart Broadcast Minimum Interval (seconds)</label>
+                            <input type="number" class="form-control" name="broadcast_smart_minimum_interval_secs" value="{{ config.position.config.broadcast_smart_minimum_interval_secs if config.position.success else 30 }}" min="0">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="fixed_position" {% if config.position.success and config.position.config.fixed_position %}checked{% endif %}>
+                            <label class="form-check-label">Use Fixed Position</label>
+                        </div>
+                        <div class="mb-3" id="fixed-position-coords">
+                            <label class="form-label">Fixed Position Latitude</label>
+                            <input type="number" class="form-control" name="fixed_latitude"
+                                   step="0.000001"
+                                   placeholder="e.g., 38.452231"
+                                   value="{% if config.position.success and config.position.config.latitude_i and config.position.config.latitude_i != 0 %}{{ (config.position.config.latitude_i / 10000000.0) }}{% endif %}">
+                            <small class="form-text text-muted">Decimal degrees (e.g., 38.452231)</small>
+                        </div>
+                        <div class="mb-3" id="fixed-position-coords-lon">
+                            <label class="form-label">Fixed Position Longitude</label>
+                            <input type="number" class="form-control" name="fixed_longitude"
+                                   step="0.000001"
+                                   placeholder="e.g., -122.620657"
+                                   value="{% if config.position.success and config.position.config.longitude_i and config.position.config.longitude_i != 0 %}{{ (config.position.config.longitude_i / 10000000.0) }}{% endif %}">
+                            <small class="form-text text-muted">Decimal degrees (e.g., -122.620657)</small>
+                        </div>
+                        <div class="mb-3" id="fixed-position-coords-alt">
+                            <label class="form-label">Fixed Position Altitude (meters)</label>
+                            <input type="number" class="form-control" name="fixed_altitude"
+                                   placeholder="e.g., 128"
+                                   value="{% if config.position.success and config.position.config.altitude %}{{ config.position.config.altitude }}{% endif %}">
+                            <small class="form-text text-muted">Altitude in meters above sea level</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">GPS Update Interval (seconds, 0=default)</label>
+                            <input type="number" class="form-control" name="gps_update_interval" value="{{ config.position.config.gps_update_interval if config.position.success else 0 }}" min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Display Config -->
+                <div class="tab-pane fade" id="display-config" role="tabpanel">
+                    <h4>Display Configuration</h4>
+                    <form id="display-form" data-section="display">
+                        <div class="mb-3">
+                            <label class="form-label">Screen On Duration (seconds, 0=always on)</label>
+                            <input type="number" class="form-control" name="screen_on_secs" value="{{ config.display.config.screen_on_secs if config.display.success else 0 }}" min="0" max="86400">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">GPS Format</label>
+                            <select class="form-select" name="gps_format">
+                                {% if config.display.success %}
+                                    {% for option in config.display.config.gps_format_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Units</label>
+                            <select class="form-select" name="units">
+                                {% if config.display.success %}
+                                    {% for option in config.display.config.units_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Auto Screen Carousel (seconds, 0=disabled)</label>
+                            <input type="number" class="form-control" name="auto_screen_carousel_secs" value="{{ config.display.config.auto_screen_carousel_secs if config.display.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="compass_north_top" {% if config.display.success and config.display.config.compass_north_top %}checked{% endif %}>
+                            <label class="form-check-label">Compass North to Top</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="flip_screen" {% if config.display.success and config.display.config.flip_screen %}checked{% endif %}>
+                            <label class="form-check-label">Flip Screen</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="wake_on_tap_or_motion" {% if config.display.success and config.display.config.wake_on_tap_or_motion %}checked{% endif %}>
+                            <label class="form-check-label">Wake on Tap or Motion</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="use_12h_clock" {% if config.display.success and config.display.config.use_12h_clock %}checked{% endif %}>
+                            <label class="form-check-label">Use 12-Hour Clock</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Power Config -->
+                <div class="tab-pane fade" id="power-config" role="tabpanel">
+                    <h4>Power Configuration</h4>
+                    <form id="power-form" data-section="power">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_power_saving" {% if config.power.success and config.power.config.is_power_saving %}checked{% endif %}>
+                            <label class="form-check-label">Power Saving Mode</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Shutdown After (seconds on battery, 0=disabled)</label>
+                            <input type="number" class="form-control" name="on_battery_shutdown_after_secs" value="{{ config.power.config.on_battery_shutdown_after_secs if config.power.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Wait for Bluetooth (seconds)</label>
+                            <input type="number" class="form-control" name="wait_bluetooth_secs" value="{{ config.power.config.wait_bluetooth_secs if config.power.success else 60 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Super Deep Sleep (seconds)</label>
+                            <input type="number" class="form-control" name="sds_secs" value="{{ config.power.config.sds_secs if config.power.success else 4294967295 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Light Sleep (seconds)</label>
+                            <input type="number" class="form-control" name="ls_secs" value="{{ config.power.config.ls_secs if config.power.success else 300 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Minimum Wake (seconds)</label>
+                            <input type="number" class="form-control" name="min_wake_secs" value="{{ config.power.config.min_wake_secs if config.power.success else 10 }}" min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Network Config -->
+                <div class="tab-pane fade" id="network-config" role="tabpanel">
+                    <h4>Network Configuration</h4>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Warning:</strong> Changing WiFi settings while connected via WiFi may disconnect you from the device.
+                    </div>
+                    <form id="network-form" data-section="network">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="wifi_enabled" {% if config.network.success and config.network.config.wifi_enabled %}checked{% endif %}>
+                            <label class="form-check-label">WiFi Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">WiFi SSID</label>
+                            <input type="text" class="form-control" name="wifi_ssid" value="{{ config.network.config.wifi_ssid if config.network.success else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">WiFi Password</label>
+                            <input type="password" class="form-control" name="wifi_psk" placeholder="Enter new password to change">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">NTP Server</label>
+                            <input type="text" class="form-control" name="ntp_server" value="{{ config.network.config.ntp_server if config.network.success else '' }}">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="eth_enabled" {% if config.network.success and config.network.config.eth_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Ethernet Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address Mode</label>
+                            <select class="form-select" name="address_mode">
+                                {% if config.network.success %}
+                                    {% for option in config.network.config.address_mode_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="ipv6_enabled" {% if config.network.success and config.network.config.ipv6_enabled %}checked{% endif %}>
+                            <label class="form-check-label">IPv6 Enabled</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Bluetooth Config -->
+                <div class="tab-pane fade" id="bluetooth-config" role="tabpanel">
+                    <h4>Bluetooth Configuration</h4>
+                    <form id="bluetooth-form" data-section="bluetooth">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.bluetooth.success and config.bluetooth.config.enabled %}checked{% endif %}>
+                            <label class="form-check-label">Bluetooth Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">PIN Mode</label>
+                            <select class="form-select" name="mode">
+                                {% if config.bluetooth.success %}
+                                    {% for option in config.bluetooth.config.mode_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fixed PIN (for FIXED_PIN mode)</label>
+                            <input type="number" class="form-control" name="fixed_pin" value="{{ config.bluetooth.config.fixed_pin if config.bluetooth.success else 123456 }}" min="0" max="999999">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Security Config -->
+                <div class="tab-pane fade" id="security-config" role="tabpanel">
+                    <h4>Security Configuration</h4>
+                    <form id="security-form" data-section="security">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_managed" {% if config.security.success and config.security.config.is_managed %}checked{% endif %}>
+                            <label class="form-check-label">Device is Managed</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="serial_enabled" {% if config.security.success and config.security.config.serial_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Serial Console Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="debug_log_api_enabled" {% if config.security.success and config.security.config.debug_log_api_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Debug Log API Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="admin_channel_enabled" {% if config.security.success and config.security.config.admin_channel_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Admin Channel Enabled</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- MQTT Config -->
+                <div class="tab-pane fade" id="mqtt-config" role="tabpanel">
+                    <h4>MQTT Module Configuration</h4>
+                    <form id="mqtt-form" data-section="mqtt">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.mqtt.success and config.mqtt.config.enabled %}checked{% endif %}>
+                            <label class="form-check-label">MQTT Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Broker Address</label>
+                            <input type="text" class="form-control" name="address" value="{{ config.mqtt.config.address if config.mqtt.success else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" name="username" value="{{ config.mqtt.config.username if config.mqtt.success else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" placeholder="Enter new password to change">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Root Topic</label>
+                            <input type="text" class="form-control" name="root" value="{{ config.mqtt.config.root if config.mqtt.success else 'msh' }}">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="encryption_enabled" {% if config.mqtt.success and config.mqtt.config.encryption_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Encryption Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="json_enabled" {% if config.mqtt.success and config.mqtt.config.json_enabled %}checked{% endif %}>
+                            <label class="form-check-label">JSON Format Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="tls_enabled" {% if config.mqtt.success and config.mqtt.config.tls_enabled %}checked{% endif %}>
+                            <label class="form-check-label">TLS Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="proxy_to_client_enabled" {% if config.mqtt.success and config.mqtt.config.proxy_to_client_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Proxy to Client Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="map_reporting_enabled" {% if config.mqtt.success and config.mqtt.config.map_reporting_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Map Reporting Enabled</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Telemetry Config -->
+                <div class="tab-pane fade" id="telemetry-config" role="tabpanel">
+                    <h4>Telemetry Module Configuration</h4>
+                    <form id="telemetry-form" data-section="telemetry">
+                        <div class="mb-3">
+                            <label class="form-label">Device Update Interval (seconds, 0=default)</label>
+                            <input type="number" class="form-control" name="device_update_interval" value="{{ config.telemetry.config.device_update_interval if config.telemetry.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Environment Update Interval (seconds, 0=disabled)</label>
+                            <input type="number" class="form-control" name="environment_update_interval" value="{{ config.telemetry.config.environment_update_interval if config.telemetry.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="environment_measurement_enabled" {% if config.telemetry.success and config.telemetry.config.environment_measurement_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Environment Measurement Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="environment_screen_enabled" {% if config.telemetry.success and config.telemetry.config.environment_screen_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Show Environment on Screen</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="environment_display_fahrenheit" {% if config.telemetry.success and config.telemetry.config.environment_display_fahrenheit %}checked{% endif %}>
+                            <label class="form-check-label">Display Fahrenheit</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="air_quality_enabled" {% if config.telemetry.success and config.telemetry.config.air_quality_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Air Quality Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Air Quality Interval (seconds, 0=disabled)</label>
+                            <input type="number" class="form-control" name="air_quality_interval" value="{{ config.telemetry.config.air_quality_interval if config.telemetry.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="power_measurement_enabled" {% if config.telemetry.success and config.telemetry.config.power_measurement_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Power Measurement Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Power Update Interval (seconds, 0=disabled)</label>
+                            <input type="number" class="form-control" name="power_update_interval" value="{{ config.telemetry.config.power_update_interval if config.telemetry.success else 0 }}" min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Serial Config -->
+                <div class="tab-pane fade" id="serial-config" role="tabpanel">
+                    <h4>Serial Module Configuration</h4>
+                    <form id="serial-form" data-section="serial">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.serial.success and config.serial.config.enabled %}checked{% endif %}>
+                            <label class="form-check-label">Serial Module Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="echo" {% if config.serial.success and config.serial.config.echo %}checked{% endif %}>
+                            <label class="form-check-label">Echo Serial Input</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Serial Mode</label>
+                            <select class="form-select" name="mode">
+                                {% if config.serial.success %}
+                                    {% for option in config.serial.config.mode_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Baud Rate</label>
+                            <select class="form-select" name="baud">
+                                {% if config.serial.success %}
+                                    {% for option in config.serial.config.baud_options %}
+                                        <option value="{{ option.value }}" {% if option.selected %}selected{% endif %}>{{ option.name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Timeout (milliseconds)</label>
+                            <input type="number" class="form-control" name="timeout" value="{{ config.serial.config.timeout if config.serial.success else 0 }}" min="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Store & Forward Config -->
+                <div class="tab-pane fade" id="store-forward-config" role="tabpanel">
+                    <h4>Store & Forward Configuration</h4>
+                    <form id="store-forward-form" data-section="store_forward">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.store_forward.success and config.store_forward.config.enabled %}checked{% endif %}>
+                            <label class="form-check-label">Store & Forward Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="heartbeat" {% if config.store_forward.success and config.store_forward.config.heartbeat %}checked{% endif %}>
+                            <label class="form-check-label">Heartbeat Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Number of Records to Store</label>
+                            <input type="number" class="form-control" name="records" value="{{ config.store_forward.config.records if config.store_forward.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">History Return Max</label>
+                            <input type="number" class="form-control" name="history_return_max" value="{{ config.store_forward.config.history_return_max if config.store_forward.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">History Return Window</label>
+                            <input type="number" class="form-control" name="history_return_window" value="{{ config.store_forward.config.history_return_window if config.store_forward.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_server" {% if config.store_forward.success and config.store_forward.config.is_server %}checked{% endif %}>
+                            <label class="form-check-label">Is Store & Forward Server</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- External Notification Config -->
+                <div class="tab-pane fade" id="external-notification-config" role="tabpanel">
+                    <h4>External Notification Configuration</h4>
+                    <form id="external-notification-form" data-section="external_notification">
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.external_notification.success and config.external_notification.config.enabled %}checked{% endif %}>
+                            <label class="form-check-label">External Notification Enabled</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Output Duration (milliseconds)</label>
+                            <input type="number" class="form-control" name="output_ms" value="{{ config.external_notification.config.output_ms if config.external_notification.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Output GPIO Pin</label>
+                            <input type="number" class="form-control" name="output" value="{{ config.external_notification.config.output if config.external_notification.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Vibration Output GPIO Pin</label>
+                            <input type="number" class="form-control" name="output_vibra" value="{{ config.external_notification.config.output_vibra if config.external_notification.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Buzzer Output GPIO Pin</label>
+                            <input type="number" class="form-control" name="output_buzzer" value="{{ config.external_notification.config.output_buzzer if config.external_notification.success else 0 }}" min="0">
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="active" {% if config.external_notification.success and config.external_notification.config.active %}checked{% endif %}>
+                            <label class="form-check-label">Active State</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="alert_message" {% if config.external_notification.success and config.external_notification.config.alert_message %}checked{% endif %}>
+                            <label class="form-check-label">Alert on Message</label>
+                        </div>
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="use_pwm" {% if config.external_notification.success and config.external_notification.config.use_pwm %}checked{% endif %}>
+                            <label class="form-check-label">Use PWM</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Other Modules Config -->
+                <div class="tab-pane fade" id="other-modules-config" role="tabpanel">
+                    <h4>Other Module Configurations</h4>
+
+                    <div class="accordion" id="otherModulesAccordion">
+                        <!-- Range Test -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#rangeTestCollapse">
+                                    Range Test
+                                </button>
+                            </h2>
+                            <div id="rangeTestCollapse" class="accordion-collapse collapse" data-bs-parent="#otherModulesAccordion">
+                                <div class="accordion-body">
+                                    <form id="range-test-form" data-section="range_test">
+                                        <div class="mb-3 form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.range_test.success and config.range_test.config.enabled %}checked{% endif %}>
+                                            <label class="form-check-label">Range Test Enabled</label>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Sender Node Number</label>
+                                            <input type="number" class="form-control" name="sender" value="{{ config.range_test.config.sender if config.range_test.success else 0 }}" min="0">
+                                        </div>
+                                        <div class="mb-3 form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="save" {% if config.range_test.success and config.range_test.config.save %}checked{% endif %}>
+                                            <label class="form-check-label">Save Results</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Neighbor Info -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#neighborInfoCollapse">
+                                    Neighbor Info
+                                </button>
+                            </h2>
+                            <div id="neighborInfoCollapse" class="accordion-collapse collapse" data-bs-parent="#otherModulesAccordion">
+                                <div class="accordion-body">
+                                    <form id="neighbor-info-form" data-section="neighbor_info">
+                                        <div class="mb-3 form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.neighbor_info.success and config.neighbor_info.config.enabled %}checked{% endif %}>
+                                            <label class="form-check-label">Neighbor Info Enabled</label>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Update Interval (seconds)</label>
+                                            <input type="number" class="form-control" name="update_interval" value="{{ config.neighbor_info.config.update_interval if config.neighbor_info.success else 0 }}" min="0">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detection Sensor -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#detectionSensorCollapse">
+                                    Detection Sensor
+                                </button>
+                            </h2>
+                            <div id="detectionSensorCollapse" class="accordion-collapse collapse" data-bs-parent="#otherModulesAccordion">
+                                <div class="accordion-body">
+                                    <form id="detection-sensor-form" data-section="detection_sensor">
+                                        <div class="mb-3 form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="enabled" {% if config.detection_sensor.success and config.detection_sensor.config.enabled %}checked{% endif %}>
+                                            <label class="form-check-label">Detection Sensor Enabled</label>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Monitor Pin</label>
+                                            <input type="number" class="form-control" name="monitor_pin" value="{{ config.detection_sensor.config.monitor_pin if config.detection_sensor.success else 0 }}" min="0">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Sensor Name</label>
+                                            <input type="text" class="form-control" name="name" value="{{ config.detection_sensor.config.name if config.detection_sensor.success else '' }}">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add remaining modules as needed -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

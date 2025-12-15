@@ -126,8 +126,8 @@ Be sure to update the lat/long.
 
 To run the app:
 
-* For connection over WiFi: `python app.py ip-address-of-node`
-* For connection over Serial: `python app.py /dev/...`
+* For connection over WiFi: `python mesher.py ip-address-of-node`
+* For connection over Serial: `python mesher.py /dev/...`
 
 There are default connections in mesh.py if you don't provide an ip-address or serial device.
 

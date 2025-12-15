@@ -18,9 +18,9 @@ pip install -r requirements.txt
 Copy `sample-config.toml` to `config.toml` and update the latitude/longitude settings before running.
 
 ### Running
-- **WiFi connection**: `python app.py <ip-address-of-node>`
-- **Serial connection**: `python app.py /dev/<serial-device>`
-- **Quick start**: `./start.sh` (activates venv and runs app)
+- **WiFi connection**: `python mesher.py <ip-address-of-node>`
+- **Serial connection**: `python mesher.py /dev/<serial-device>`
+- **Quick start**: `./start.sh` (activates venv and runs mesher.py)
 
 The connection address can also be set via the `DEVICE_ADDRESS` environment variable. If no address is provided, the app uses the default in mesh.py (line 11).
 
@@ -41,7 +41,7 @@ The application uses singletons extensively for shared state:
 3. **Status** updates are pushed to the UI via polling endpoint `/api/updates`
 
 ### Threading and Locking
-- Trace routes run in background threads (app.py:61-72) since sendTraceRoute blocks
+- Trace routes run in background threads (mesher.py:61-72) since sendTraceRoute blocks
 - NodeData uses locks when flattening data to prevent race conditions (nodedata.py:28)
 
 ### Data Persistence
@@ -81,7 +81,6 @@ http_logging = false
 
 ## Important Notes
 
-- Do not kill `python app.py` processes indiscriminately; verify the process is from this app
 - The app gets disconnected when the computer sleeps; restart required
 - Connection retry logic exists in listener.py (4 attempts with 5-second delays)
 - Distance calculations require valid lat/long in config.toml

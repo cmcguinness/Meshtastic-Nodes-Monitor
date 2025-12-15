@@ -91,8 +91,10 @@ class Mesh:
             return 'Node not found'
 
         try:
+            # Convert hex string to integer (remove '!' prefix first)
+            dest_int = int(dest[1:], 16)
             # Send the message
-            r = self.node.sendText(message, dest)
+            r = self.node.sendText(message, dest_int)
             return None
         except Exception as e:
             return str(e)

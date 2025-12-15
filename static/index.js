@@ -168,7 +168,7 @@ function updateTables() {
                                 </td>
                                 <td>${node.name}</td>
                                 <td>${node.hwModel}</td>
-                                <td>${node.hopsAway}</td>
+                                <td>${node.hopsAway !== null && node.hopsAway >= 0 ? node.hopsAway : ''}</td>
                                 <td>${node.distance}</td>
                             </tr>
                         `;
@@ -191,7 +191,7 @@ function updateTables() {
                                     </div>
                                 </td>
                                 <td>${packet.name}</td>
-                                <td>${packet.hops}</td>
+                                <td>${packet.hops >= 0 ? packet.hops : ''}</td>
                                 <td>${packet.rssi}</td>
                                 <td>${packet.type}</td>
                                 <td>${packet.information}</td>
@@ -314,6 +314,40 @@ function showLocalNodeInfo() {
         })
         .then(html => {
             modalBody.innerHTML = html;
+        })
+        .catch(error => {
+            modalBody.innerHTML = `<div class="alert alert-danger">Error loading content: ${error.message}</div>`;
+        });
+}
+
+// Initialize the config modal
+let config_modal = null;
+
+function showConfigInfo() {
+    if (!config_modal) {
+        config_modal = new bootstrap.Modal(document.getElementById('configModal'));
+    }
+
+    const modalBody = document.querySelector('#configModal .modal-body');
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+    config_modal.show();
+
+    fetch('/api/config')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            modalBody.innerHTML = html;
+            // Initialize the config forms after content is loaded
+            if (typeof initializeConfigForms === 'function') {
+                initializeConfigForms();
+            }
+            // Store modal reference for nodeconfig.js
+            window.configModal = config_modal;
         })
         .catch(error => {
             modalBody.innerHTML = `<div class="alert alert-danger">Error loading content: ${error.message}</div>`;

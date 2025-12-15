@@ -39,6 +39,7 @@
         <span class="navbar-brand" style="font-weight: lighter;">
             {{ name }}, Version: {{ version }}, Battery: {{ batt_level }}%
             <button class="btn btn-sm btn-outline-light ms-3" onclick="showLocalNodeInfo()">Info</button>
+            <button class="btn btn-sm btn-outline-light ms-2" onclick="showConfigInfo()">Config</button>
         </span>
     </div>
 </nav>
@@ -378,6 +379,29 @@
     </div>
 </div>
 
+<!--
+    ┌───────────────────────────────────────────────────────────┐
+    │                   Node Configuration Modal                │
+    └───────────────────────────────────────────────────────────┘
+-->
+<div class="modal fade" id="configModal" tabindex="-1" aria-labelledby="configModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="configModalLabel">Node Configuration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be loaded here dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/static/index.js"></script>
+<script src="/static/nodeconfig.js"></script>
 </body>
 </html>
